@@ -17,7 +17,7 @@
 #define NETWORKLAYER_CONFIGURATOR_IPV4_LEOIPV4NETWORKCONFIGURATOR_H_
 
 #include <algorithm>
-#include <igraph.h>
+#include </usr/local/include/igraph/igraph.h>
 #include <queue>
 #include <tuple>
 #include <inet/common/Topology.h>

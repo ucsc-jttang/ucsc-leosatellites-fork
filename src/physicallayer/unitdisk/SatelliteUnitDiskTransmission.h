@@ -16,7 +16,7 @@
 #ifndef OS3_PHYSICALLAYER_UNITDISK_SATELLITEUNITDISKTRANSMISSION_H_
 #define OS3_PHYSICALLAYER_UNITDISK_SATELLITEUNITDISKTRANSMISSION_H_
 
-#include "libnorad/ccoord.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
 #include "inet/physicallayer/wireless/unitdisk/UnitDiskTransmission.h"
 
 namespace inet {

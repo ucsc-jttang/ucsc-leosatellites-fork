@@ -1,6 +1,6 @@
 #include "cEcef.h"
-#include "libnorad/globals.h"
-#include "libnorad/ccoord.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/globals.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
 #include <math.h>
 //////////////////////////////////////////////////////////////////////
 // cEcef(cCoordGeo&)

@@ -12,9 +12,9 @@
 #include  <cmath>
 
 #include "cOrbitA.h"
-#include "libnorad/cJulian.h"
-#include "libnorad/cVector.h"
-#include "libnorad/ccoord.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cJulian.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cVector.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
 
 // This class implements the NORAD Simple General Perturbation 4 orbit
 // model. This model provides the ECI coordiantes/velocity of satellites

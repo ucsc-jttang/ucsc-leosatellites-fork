@@ -4,9 +4,9 @@
 #include <cmath>
 #include <fstream>
 
-#include "libnorad/cTLE.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cTLE.h"
 #include "../libnorad/cOrbitA.h"
-#include "libnorad/cSite.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cSite.h"
 
 using namespace omnetpp;
 Define_Module(NoradA);

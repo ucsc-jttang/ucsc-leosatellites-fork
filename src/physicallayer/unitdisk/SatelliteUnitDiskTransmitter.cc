@@ -21,8 +21,8 @@
 #include "inet/physicallayer/wireless/unitdisk/UnitDiskPhyHeader_m.h"
 #include "inet/physicallayer/wireless/unitdisk/UnitDiskTransmission.h"
 #include "inet/physicallayer/wireless/unitdisk/UnitDiskTransmitter.h"
-#include "mobility/LUTMotionMobility.h"
-#include "mobility/SatSGP4Mobility.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/mobility/LUTMotionMobility.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/mobility/SatSGP4Mobility.h"
 #include "../../mobility/GroundStationMobility.h"
 #include "../../mobility/SatelliteMobility.h"
 namespace inet {

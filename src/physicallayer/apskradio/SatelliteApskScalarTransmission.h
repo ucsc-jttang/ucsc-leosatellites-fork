@@ -16,7 +16,7 @@
 #ifndef OS3_PHYSICALLAYER_APSKRADIO_SATELLITEAPSKSCALARTRANSMISSION_H_
 #define OS3_PHYSICALLAYER_APSKRADIO_SATELLITEAPSKSCALARTRANSMISSION_H_
 
-#include "libnorad/ccoord.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
 #include "inet/physicallayer/wireless/apsk/packetlevel/ApskScalarTransmission.h"
 
 namespace inet {

@@ -21,9 +21,9 @@
 #include <string>
 #include <ctime>
 
-#include "libnorad/cEci.h"
-#include "libnorad/cJulian.h"
-#include "libnorad/ccoord.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cEci.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cJulian.h"
+#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad//ccoord.h"
 
 using namespace omnetpp;
 
