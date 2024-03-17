@@ -17,7 +17,6 @@
 #include<iostream>
 #include <filesystem>
 #include "LeoIpv4NetworkConfigurator.h"
-
 namespace inet {
 Define_Module(LeoIpv4NetworkConfigurator);
 
@@ -38,7 +37,13 @@ void LeoIpv4NetworkConfigurator::initialize(int stage)
         satPerPlane = getAncestorPar("satsPerPlane");
         unsigned int planes = getAncestorPar("numOfPlanes");
         numOfPlanes = (int)std::ceil(((double)numOfSats/((double)planes*(double)satPerPlane))*(double)planes); //depending on number of satellites, all planes may not be filled
-        numOfISLs = numOfSats*2; // two per sat (Grid +)
+        enableInterSatelliteLinks = par("enableInterSatelliteLinks");
+        if (enableInterSatelliteLinks){
+            numOfISLs = numOfSats*2; // two per sat (Grid +)
+        }
+        else {
+            numOfISLs = 0;
+        }
         assignIDtoModules();
         numOfKPaths = par("numOfKPaths");
         currentInterval = 0;
@@ -100,78 +105,84 @@ void LeoIpv4NetworkConfigurator::updateForwardingStates(simtime_t currentInterva
 
 void LeoIpv4NetworkConfigurator::establishInitialISLs()
 {
-    //igraph_vector_int_init(&islVec, numOfISLs*2); //two vecs needed for each ISL
-    igraph_vector_int_init(&islVec, 0);
-    unsigned int islVecIterator = 0;
-    for(int planeNum = 0; planeNum < numOfPlanes; planeNum++){
-        unsigned int numOfSatsInPlane =  planeNum*satPerPlane+satPerPlane;
-        if(numOfSats < numOfSatsInPlane){
-            numOfSatsInPlane = numOfSats;
-        }
-        for(unsigned int satNum = planeNum*satPerPlane; satNum < numOfSatsInPlane; satNum++){
-            cModule *satMod = nodeModules.find(satNum)->second; // get source satellite module
-            SatelliteMobility* sourceSatMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
-            int destSatNumA = (satNum+1)%(satPerPlane*(planeNum+1));
-            if(destSatNumA == 0){
-                destSatNumA = planeNum*satPerPlane; //If number is zero, must be start of orbital plane
-            }
-            if(destSatNumA < numOfSats){
-                cModule *destModA = nodeModules.find(destSatNumA)->second;
-                //VECTOR(islVec)[islVecIterator] = satNum; VECTOR(islVec)[islVecIterator+1] = destSatNumA;
-                igraph_vector_int_push_back(&islVec, satNum);
-                igraph_vector_int_push_back(&islVec, destSatNumA);
-
-                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getModuleByPath(".mobility"));
-                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-
-                islVecIterator = islVecIterator + 2;
-//                for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
-//                    cGate* srcGate = satMod->gate("pppg$o", i);
-//                    if(srcGate->isConnected()){
-//                        cChannel *chan = srcGate->getChannel();
-//                        cModule* destModule = srcGate->getPathEndGate()->getOwnerModule()->getParentModule()->getParentModule();
-//                        //std::cout << "\n" << destModA->getFullName() << " - " << destModule->getFullName() << endl;
-//                        if(destModA == destModule){
-//                            std::string mobilityName = destModA->getModuleByPath(".mobility")->getNedTypeName();
-//                            double distance = 0;
-//                            if(mobilityName == "leosatellites.mobility.SatelliteMobility"){
-//                                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getModuleByPath(".mobility"));
-//                                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-//                            }
-//                        }
-//                    }
-//                }
-            }
-            int destSatNumB = (satNum + satPerPlane);// % totalSats;
-            if(destSatNumB < numOfSats){
-                cModule *destModB = nodeModules.find(destSatNumB)->second;
-                //VECTOR(islVec)[islVecIterator] = satNum; VECTOR(islVec)[islVecIterator+1] = destSatNumB;
-                igraph_vector_int_push_back(&islVec, satNum);
-                igraph_vector_int_push_back(&islVec, destSatNumB);
-
-                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModB->getModuleByPath(".mobility"));
-                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-
-                //islVecIterator = islVecIterator + 2;
-//                for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
-//                    cGate* srcGate = satMod->gate("pppg$o", i);
-//                    if(srcGate->isConnected()){
-//                        cChannel *chan = srcGate->getChannel();
-//                        cModule* destModule = srcGate->getPathEndGate()->getOwnerModule()->getParentModule()->getParentModule();
-//                        if(destModB == destModule){
-//                            std::string mobilityName = destModB->getModuleByPath(".mobility")->getNedTypeName();
-//                            double distance = 0;
-//                            if(mobilityName == "leosatellites.mobility.SatelliteMobility"){
-//                                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModB->getModuleByPath(".mobility"));
-//                                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-//                            }
-//                        }
-//                    }
-//                }
-            }
-        }
+    if (numOfISLs == 0) {
+        fillNextHopInterfaceMap();
+        igraph_vector_int_init(&islVec, 0);
     }
-    fillNextHopInterfaceMap();
+    else {
+        //igraph_vector_int_init(&islVec, numOfISLs*2); //two vecs needed for each ISL
+        igraph_vector_int_init(&islVec, 0);
+        unsigned int islVecIterator = 0;
+        for(int planeNum = 0; planeNum < numOfPlanes; planeNum++){
+            unsigned int numOfSatsInPlane =  planeNum*satPerPlane+satPerPlane;
+            if(numOfSats < numOfSatsInPlane){
+                numOfSatsInPlane = numOfSats;
+            }
+            for(unsigned int satNum = planeNum*satPerPlane; satNum < numOfSatsInPlane; satNum++){
+                cModule *satMod = nodeModules.find(satNum)->second; // get source satellite module
+                SatelliteMobility* sourceSatMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
+                int destSatNumA = (satNum+1)%(satPerPlane*(planeNum+1));
+                if(destSatNumA == 0){
+                    destSatNumA = planeNum*satPerPlane; //If number is zero, must be start of orbital plane
+                }
+                if(destSatNumA < numOfSats){
+                    cModule *destModA = nodeModules.find(destSatNumA)->second;
+                    //VECTOR(islVec)[islVecIterator] = satNum; VECTOR(islVec)[islVecIterator+1] = destSatNumA;
+                    igraph_vector_int_push_back(&islVec, satNum);
+                    igraph_vector_int_push_back(&islVec, destSatNumA);
+
+                    SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getModuleByPath(".mobility"));
+                    satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
+
+                    islVecIterator = islVecIterator + 2;
+    //                for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
+    //                    cGate* srcGate = satMod->gate("pppg$o", i);
+    //                    if(srcGate->isConnected()){
+    //                        cChannel *chan = srcGate->getChannel();
+    //                        cModule* destModule = srcGate->getPathEndGate()->getOwnerModule()->getParentModule()->getParentModule();
+    //                        //std::cout << "\n" << destModA->getFullName() << " - " << destModule->getFullName() << endl;
+    //                        if(destModA == destModule){
+    //                            std::string mobilityName = destModA->getModuleByPath(".mobility")->getNedTypeName();
+    //                            double distance = 0;
+    //                            if(mobilityName == "leosatellites.mobility.SatelliteMobility"){
+    //                                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getModuleByPath(".mobility"));
+    //                                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+                }
+                int destSatNumB = (satNum + satPerPlane);// % totalSats;
+                if(destSatNumB < numOfSats){
+                    cModule *destModB = nodeModules.find(destSatNumB)->second;
+                    //VECTOR(islVec)[islVecIterator] = satNum; VECTOR(islVec)[islVecIterator+1] = destSatNumB;
+                    igraph_vector_int_push_back(&islVec, satNum);
+                    igraph_vector_int_push_back(&islVec, destSatNumB);
+
+                    SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModB->getModuleByPath(".mobility"));
+                    satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
+
+                    //islVecIterator = islVecIterator + 2;
+    //                for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
+    //                    cGate* srcGate = satMod->gate("pppg$o", i);
+    //                    if(srcGate->isConnected()){
+    //                        cChannel *chan = srcGate->getChannel();
+    //                        cModule* destModule = srcGate->getPathEndGate()->getOwnerModule()->getParentModule()->getParentModule();
+    //                        if(destModB == destModule){
+    //                            std::string mobilityName = destModB->getModuleByPath(".mobility")->getNedTypeName();
+    //                            double distance = 0;
+    //                            if(mobilityName == "leosatellites.mobility.SatelliteMobility"){
+    //                                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModB->getModuleByPath(".mobility"));
+    //                                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+                }
+            }
+        }
+        fillNextHopInterfaceMap();
+    }
 }
 
 void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval)

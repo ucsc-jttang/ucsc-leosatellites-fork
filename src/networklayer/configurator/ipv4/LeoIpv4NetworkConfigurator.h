@@ -60,6 +60,7 @@ protected:
     unsigned int numOfPlanes;
     unsigned int satPerPlane;
     unsigned int numOfISLs;
+    bool enableInterSatelliteLinks;
     const char* linkMetric;
     std::queue<std::tuple<int, int, double>> groundStationLinks;
     int numOfKPaths;
