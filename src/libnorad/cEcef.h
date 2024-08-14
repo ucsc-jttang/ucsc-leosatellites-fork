@@ -1,7 +1,7 @@
 #ifndef OS3_LIBNORAD_CECEF_H_
 #define OS3_LIBNORAD_CECEF_H_
 
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
+#include "../workspace/os3/src/libnorad/ccoord.h"
 
 //-----------------------------------------------------
 // Class: CEcef

@@ -12,12 +12,12 @@
 #include <ctime>
 #include <cassert>
 
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cVector.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cEci.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cJulian.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cNoradSGP4.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cNoradSDP4.h"
+#include "../workspace/os3/src/libnorad/cVector.h"
+#include "../workspace/os3/src/libnorad/cEci.h"
+#include "../workspace/os3/src/libnorad/ccoord.h"
+#include "../workspace/os3/src/libnorad/cJulian.h"
+#include "../workspace/os3/src/libnorad/cNoradSGP4.h"
+#include "../workspace/os3/src/libnorad/cNoradSDP4.h"
 #include "cNoradSGP4A.h"
 
 // This class accepts a single satellite's Keplerian elements and provides information
