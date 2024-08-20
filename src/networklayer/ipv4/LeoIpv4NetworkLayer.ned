@@ -29,6 +29,8 @@ import inet.networklayer.ipv4.Icmp;
 import inet.networklayer.ipv4.IIpv4;
 import inet.networklayer.ipv4.Icmp;
 import leosatellites.networklayer.ipv4.LeoIpv4RoutingTable;
+import inet.queueing.queue.DropTailQueue;
+import inet.queueing.server.PacketServer;
 
 //
 // Network layer of an IPv4 node.
@@ -97,6 +99,20 @@ module LeoIpv4NetworkLayer like INetworkLayer
             parameters:
                 @display("p=550,500;b=600,5");
         }
+        
+//        queue: DropTailQueue {
+//        	parameters:
+//                @display("p=750,400;q=queue");
+//                packetCapacity = 5;
+//        }
+        
+//        queuePopper: PacketServer {
+//        	parameters:
+//        	    @display("p=875,400;q=queue");   
+//        	    processingTime = 500ms;
+//        	    processingBitrate = 10Mbps;
+//        }
+            
 
     connections allowunconnected:
         transportIn --> { @display("m=n"); } --> up.in++;
@@ -123,6 +139,11 @@ module LeoIpv4NetworkLayer like INetworkLayer
         arp.ifOut --> lp.in++;
         arp.ifIn <-- lp.out++;
 
+//        ip.queueOut --> queue.in;
+//        queue.out --> queuePopper.in;
+//        queuePopper.out --> lp.in++;
+        
+        
         ip.queueOut --> lp.in++;
         ip.queueIn <-- lp.out++;
 
