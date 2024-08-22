@@ -567,3 +567,164 @@
 ##*.satellite[432].ipv4.queue.**.vector-recording = true
 #
 #
+[Config TestSatSGP4NetworkAltUp]
+network = SatSGP4Network
+SatSGP4Network.numOfShells = 1
+SatSGP4Network.shell[0].shellIndex = 0
+SatSGP4Network.shell[0].configurator.loadFiles = false
+
+SatSGP4Network.shell[0].satellite[*].mobility.typename = "SatelliteMobility"
+SatSGP4Network.shell[0].groundStation[*].mobility.typename = "GroundStationMobility"
+
+SatSGP4Network.shell[0].constraintAreaMinX = 0m
+SatSGP4Network.shell[0].constraintAreaMaxX = 2160m
+
+SatSGP4Network.shell[0].constraintAreaMinY = 0m
+SatSGP4Network.shell[0].constraintAreaMaxY = 1080m
+
+SatSGP4Network.shell[0].constraintAreaMinZ = 0m
+SatSGP4Network.shell[0].constraintAreaMaxZ = 0m
+
+## Routing settings
+SatSGP4Network.shell[0].*.ipv4.typename = "LeoIpv4NetworkLayer"
+SatSGP4Network.shell[0].*.ipv4.arp.typename = "GlobalArp"
+SatSGP4Network.shell[0].*.ipv4.routingTable.netmaskRoutes = ""
+#
+SatSGP4Network.shell[0].groundStation[*].mobility.initFromDisplayString = false
+SatSGP4Network.shell[0].groundStation[*].mobility.updateFromDisplayString  = false
+#
+### groundStation Settings - Sender Brighton
+SatSGP4Network.shell[0].groundStation[0].numApps = 1
+SatSGP4Network.shell[0].groundStation[0].app[0].typename = "PingApp"
+SatSGP4Network.shell[0].groundStation[0].app[0].startTime = 0s
+SatSGP4Network.shell[0].groundStation[0].app[0].destAddr = "shell[0].groundStation[1]"
+SatSGP4Network.shell[0].groundStation[0].app[0].sendInterval = 500ms
+
+
+#SatSGP4Network.shell[0].groundStation[0].app[1].typename = "PingApp"
+#SatSGP4Network.shell[0].groundStation[0].app[1].startTime = 0s
+#SatSGP4Network.shell[0].groundStation[0].app[1].destAddr = "groundStation[1]"
+#SatSGP4Network.shell[0].groundStation[0].app[1].sendInterval = 500ms
+#
+#SatSGP4Network.shell[0].groundStation[0].app[2].typename = "PingApp"
+#SatSGP4Network.shell[0].groundStation[0].app[2].startTime = 0s
+#SatSGP4Network.shell[0].groundStation[0].app[2].destAddr = "groundStation[1]"
+#SatSGP4Network.shell[0].groundStation[0].app[2].sendInterval = 500ms
+#
+#
+#SatSGP4Network.shell[0].groundStation[0].app[3].typename = "PingApp"
+#SatSGP4Network.shell[0].groundStation[0].app[3].startTime = 0s
+#SatSGP4Network.shell[0].groundStation[0].app[3].destAddr = "groundStation[1]"
+#SatSGP4Network.shell[0].groundStation[0].app[3].sendInterval = 500ms
+
+
+SatSGP4Network.shell[0].configurator.config = xml("<config><interface hosts='**' address='10.x.x.x' netmask='255.x.x.x'/><autoroute metric='delay'/></config>") #<autoroute metric='errorRate'/>
+SatSGP4Network.shell[0].configurator.addStaticRoutes = true
+SatSGP4Network.shell[0].configurator.optimizeRoutes = false
+SatSGP4Network.shell[0].configurator.enableInterSatelliteLinks = true  #custom parameter
+
+SatSGP4Network.shell[0].*.forwarding = true
+
+SatSGP4Network.shell[0].visualizer.dataLinkVisualizer.packetFilter = "*"
+SatSGP4Network.shell[0].visualizer.networkRouteVisualizer.displayRoutes = true
+SatSGP4Network.shell[0].visualizer.networkRouteVisualizer.packetFilter = "*"##"UDPData*"
+SatSGP4Network.shell[0].visualizer.routingTableVisualizer.destinationFilter = "*"#"satellite[125]"
+SatSGP4Network.shell[0].visualizer.statisticVisualizer.sourceFilter = "**.app[*]"
+SatSGP4Network.shell[0].visualizer.statisticVisualizer.signalName = "rtt"
+SatSGP4Network.shell[0].visualizer.statisticVisualizer.unit = "s"
+
+SatSGP4Network.shell[0].satellite[*].mobility.updateInterval = 15s
+SatSGP4Network.shell[0].numOfSats = 625
+SatSGP4Network.shell[0].satsPerPlane = 25
+SatSGP4Network.shell[0].numOfPlanes = 25
+SatSGP4Network.shell[0].numOfGS = 2
+SatSGP4Network.shell[0].alt = 950
+SatSGP4Network.shell[0].incl = 90
+SatSGP4Network.shell[0].satellite[*].NoradModule.inclination = 90*0.0174533
+SatSGP4Network.shell[0].satellite[*].NoradModule.altitude = 950
+
+#groundstation definitions
+SatSGP4Network.shell[0].groundStation[0].mobility.latitude = 38.9072
+SatSGP4Network.shell[0].groundStation[0].mobility.longitude = -77.0369
+SatSGP4Network.shell[0].groundStation[0].cityName = "Washington DC"
+
+SatSGP4Network.shell[0].groundStation[1].mobility.latitude = 50.1109
+SatSGP4Network.shell[0].groundStation[1].mobility.longitude = 8.6821
+SatSGP4Network.shell[0].groundStation[1].cityName = "Frankfurt"
+
+SatSGP4Network.shell[0].ppp[*].queue.typename = "DropTailQueue"
+#**.ppp[*].ppp.queue.packetCapacity = 100
+SatSGP4Network.shell[0].ppp[*].queue.packetCapacity = 100
+SatSGP4Network.shell[0].ipv4.configurator.typename = "LeoIpv4NodeConfigurator"
+
+SatSGP4Network.shell[0].satellite[*].NoradModule.satIndex = parentIndex()
+SatSGP4Network.shell[0].satellite[*].NoradModule.satName = "sat"  #Doesnt matter in this instance
+SatSGP4Network.shell[0].satellite[*].**.bitrate = 10Mbps
+
+#Another Network
+#SatSGP4Network.shell[1].shellIndex = 1
+#SatSGP4Network.shell[1].configurator.loadFiles = false
+#
+#SatSGP4Network.shell[1].satellite[*].mobility.typename = "SatelliteMobility"
+#
+#
+#SatSGP4Network.shell[1].constraintAreaMinX = 0m
+#SatSGP4Network.shell[1].constraintAreaMaxX = 2160m
+#
+#SatSGP4Network.shell[1].constraintAreaMinY = 0m
+#SatSGP4Network.shell[1].constraintAreaMaxY = 1080m
+#
+#SatSGP4Network.shell[1].constraintAreaMinZ = 0m
+#SatSGP4Network.shell[1].constraintAreaMaxZ = 0m
+#
+### Routing settings
+#SatSGP4Network.shell[1].*.ipv4.typename = "LeoIpv4NetworkLayer"
+#SatSGP4Network.shell[1].*.ipv4.arp.typename = "GlobalArp"
+#SatSGP4Network.shell[1].*.ipv4.routingTable.netmaskRoutes = ""
+##
+#
+#SatSGP4Network.shell[1].**.vector-recording = false
+#SatSGP4Network.shell[1].**.scalar-recording = false
+#SatSGP4Network.shell[1].groundStation[0].app[0].**.vector-recording = true
+#
+#SatSGP4Network.shell[1].configurator.config = xml("<config><interface hosts='**' address='10.x.x.x' netmask='255.x.x.x'/><autoroute metric='delay'/></config>") #<autoroute metric='errorRate'/>
+#SatSGP4Network.shell[1].configurator.addStaticRoutes = true
+#SatSGP4Network.shell[1].configurator.optimizeRoutes = false
+#SatSGP4Network.shell[1].configurator.enableInterSatelliteLinks = true  #custom parameter
+#
+#SatSGP4Network.shell[1].*.forwarding = true
+#
+#SatSGP4Network.shell[1].visualizer.dataLinkVisualizer.packetFilter = "*"
+#SatSGP4Network.shell[1].visualizer.networkRouteVisualizer.displayRoutes = true
+#SatSGP4Network.shell[1].visualizer.networkRouteVisualizer.packetFilter = "*"##"UDPData*"
+#SatSGP4Network.shell[1].visualizer.routingTableVisualizer.destinationFilter = "*"#"satellite[125]"
+#SatSGP4Network.shell[1].visualizer.statisticVisualizer.sourceFilter = "**.app[*]"
+#SatSGP4Network.shell[1].visualizer.statisticVisualizer.signalName = "rtt"
+#SatSGP4Network.shell[1].visualizer.statisticVisualizer.unit = "s"
+#
+#SatSGP4Network.shell[1].satellite[*].mobility.updateInterval = 15s
+#SatSGP4Network.shell[1].numOfSats = 625
+#SatSGP4Network.shell[1].satsPerPlane = 25
+#SatSGP4Network.shell[1].numOfPlanes = 25
+#SatSGP4Network.shell[1].numOfGS = 2
+#SatSGP4Network.shell[1].alt = 550
+#SatSGP4Network.shell[1].incl = 90
+#SatSGP4Network.shell[1].satellite[*].NoradModule.inclination = 90*0.0174533
+#SatSGP4Network.shell[1].satellite[*].NoradModule.altitude = 550
+#
+#SatSGP4Network.shell[1].ppp[*].queue.typename = "DropTailQueue"
+##**.ppp[*].ppp.queue.packetCapacity = 100
+#SatSGP4Network.shell[1].ppp[*].queue.packetCapacity = 100
+#SatSGP4Network.shell[1].ipv4.configurator.typename = "LeoIpv4NodeConfigurator"
+#
+#SatSGP4Network.shell[1].satellite[*].NoradModule.satIndex = parentIndex()
+#SatSGP4Network.shell[1].satellite[*].NoradModule.satName = "sat"  #Doesnt matter in this instance
+#SatSGP4Network.shell[1].satellite[*].**.bitrate = 10Mbps
+
+#recording settings
+#SatSGP4Network.shell[1].**.vector-recording = false
+#SatSGP4Network.shell[1].**.scalar-recording = false
+SatSGP4Network.shell[0].groundStation[0].app[0].**.vector-recording = true
+**.groundStation[0].ppp[4].queue.**.statistic-recording = true
+**.groundStation[0]ppp[4].queue.**.scalar-recording = true
+**.groundStation[0].ppp[4].queue.**.vector-recording = true
