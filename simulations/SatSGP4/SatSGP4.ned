@@ -27,9 +27,10 @@ import leosatellites.common.LeoChannelConstructor;
 // the new mdodels being used such as the SatelliteNetworkConfigurator which will periodically run Dijkstra's
 // algorthm to re establish routes in a dynamic satellite network.
 //
-network SatSGP4
+module SatSGP4
 {
     parameters:
+        int shellIndex;
         int numOfSats; // Number of satellites
         int numOfGS; // Number of Mission Control Centers
         double incl;
@@ -61,4 +62,10 @@ network SatSGP4
         	@display("p=704.06,601.0725;i=abstract/person,#17FF39;b=,,rect;is=vl;t=Channel Constructor");
         }
     connections allowunconnected:
+}
+network SatSGP4Network {
+    parameters:
+        int numOfShells;
+	submodules:
+	    shell[numOfShells]: SatSGP4;    
 }

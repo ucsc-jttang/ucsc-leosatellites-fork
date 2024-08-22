@@ -19,6 +19,7 @@
 #include <inet/networklayer/ipv4/Ipv4.h>
 #include <inet/networklayer/common/NextHopAddressTag_m.h>
 #include <inet/linklayer/common/InterfaceTag_m.h>
+#include <random>
 namespace inet {
 class INET_API LeoIpv4 : public Ipv4{
 protected:
@@ -28,11 +29,14 @@ protected:
     std::map<uint32_t,uint32_t> nextHops;   //Destination Address (int format) -> Interface ID
     std::map<std::string,std::string> nextHopsStr;   //Destination Address (int format) -> Interface ID
     std::map<int, std::map<uint32_t,uint32_t>> kNextHops;
+    unsigned int shellIndex;
+    std::mt19937 rng;
 public:
     void addKNextHop(int k, uint32_t destinationAddr, uint32_t nextInterfaceID);
     void addNextHop(uint32_t destinationAddr, uint32_t nextInterfaceID);
     void addNextHopStr(std::string destinationAddr, std::string nextInterfaceID);
-    void clearNextHops();
+    void clearNextHops(int shellIndex);
+    int getShellIndex();
     LeoIpv4();
     virtual ~LeoIpv4();
 };

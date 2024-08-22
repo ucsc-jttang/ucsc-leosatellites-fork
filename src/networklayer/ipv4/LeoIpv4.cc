@@ -20,6 +20,7 @@ Define_Module(LeoIpv4);
 
 LeoIpv4::LeoIpv4()
 {
+//    rng.seed(1);
 }
 
 LeoIpv4::~LeoIpv4()
@@ -50,10 +51,22 @@ void LeoIpv4::addNextHopStr(std::string destinationAddr, std::string nextInterfa
     nextHopsStr[destinationAddr] = nextInterfaceID;
 }
 
-void LeoIpv4::clearNextHops(){
-    kNextHops.clear();
+void LeoIpv4::clearNextHops(int shellIndex=0){
+    if(shellIndex == 0){
+        kNextHops.clear();
+    } else {
+        kNextHops[shellIndex].clear();
+    }
     nextHopsStr.clear();
     nextHops.clear();
+}
+
+int LeoIpv4::getShellIndex(){
+    int rows = sizeof kNextHops / sizeof kNextHops[0];
+    if (rows > 1) {
+        return rows;
+    }
+    return -1;
 }
 
 void LeoIpv4::routeUnicastPacket(Packet *packet)
@@ -88,9 +101,31 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
     }
     else {
         // use Ipv4 routing (lookup in routing table)
-        //std::cout << "\nFinding best matching route for: " << destAddr.str() << endl;
+        std::cout << "\nFinding best matching route for: " << destAddr.str() << endl;
         //const Ipv4Route *re = rt->findBestMatchingRoute(destAddr);
-        int interfaceID = kNextHops[1][destAddr.getInt()];
+        int shell = -1;
+        auto it = kNextHops.begin();
+
+        if(kNextHops.size() > 1){
+            shell = rng()%kNextHops.size();
+        } else {
+            shell = it->first;
+        }
+
+        int interfaceID = kNextHops[shell][destAddr.getInt()];
+        // Simulator Limitation:shell0 interfaces cannot be reached by shell1 interfaces
+        //if you are returning a packet to sender, you must send it back on the same shell path
+        if (!interfaceID ){
+             for(auto it = kNextHops.begin(); it != kNextHops.end(); ++it){
+                 auto i = std::distance(kNextHops.begin(), it);
+                 int potentialInterfaceId = kNextHops[i][destAddr.getInt()];
+                 if(potentialInterfaceId){
+                     interfaceID=potentialInterfaceId;
+                     break;
+                 }
+             }
+        }
+
         if (interfaceID) {
             //std::cout << "Adding route with the following dest ID: " << interfaceID << endl;
             //std::cout << "Gateway: " << re->getGateway() << endl;

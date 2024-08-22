@@ -24,6 +24,7 @@ public:
 protected:
     LeoIpv4NetworkConfigurator* configurator;
 
+    unsigned int shellIndex;
     cMessage *startManagerNode;
     cMessage *updateTimer;
     simtime_t updateInterval;

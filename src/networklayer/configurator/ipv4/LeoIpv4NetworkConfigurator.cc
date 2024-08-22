@@ -29,6 +29,7 @@ void LeoIpv4NetworkConfigurator::initialize(int stage)
 {
     if(stage == INITSTAGE_LOCAL){
         networkName = getParentModule()->getName();
+        shellIndex = getAncestorPar("shellIndex");
         loadFiles = par("loadFiles");
         minLinkWeight = par("minLinkWeight");
         configureIsolatedNetworksSeparatly = par("configureIsolatedNetworksSeparatly").boolValue();
@@ -98,13 +99,24 @@ void LeoIpv4NetworkConfigurator::updateForwardingStates(simtime_t currentInterva
         loadConfiguration(currentInterval);
     }
     else{
+        std::string nodeName = std::string("shell[0].groundStation[0].ipv4.ip");
+        if(shellIndex == 1){
+            LeoIpv4* mod = dynamic_cast<LeoIpv4*>(getModuleByPath(nodeName.c_str()));
+//            mod->addKNextHop(0, 0, 0);
+        }
         generateTopologyGraph(currentInterval);
+        if(shellIndex == 1){
+            LeoIpv4* mod = dynamic_cast<LeoIpv4*>(getModuleByPath(nodeName.c_str()));
+            mod->addKNextHop(0, 0, 0);
+        }
     }
 
 }
 
 void LeoIpv4NetworkConfigurator::establishInitialISLs()
 {
+
+
     if (numOfISLs == 0) {
         fillNextHopInterfaceMap();
         igraph_vector_int_init(&islVec, 0);
@@ -196,7 +208,7 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
 
     for (int nodeNum = 0; nodeNum < numOfSats+numOfGS; nodeNum++) {
         cModule* mod = nodeModules.find(nodeNum)->second;
-        dynamic_cast<LeoIpv4 *>(mod->getModuleByPath(".ipv4.ip"))->clearNextHops();
+        dynamic_cast<LeoIpv4 *>(mod->getModuleByPath(".ipv4.ip"))->clearNextHops(shellIndex);
     }
     std::chrono::high_resolution_clock::time_point fillVectorStartTime = std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point shortestPathEndTime, fillVectorEndTime;
@@ -289,7 +301,16 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                             std::string str2 = nextHopMod->getFullName() + std::to_string(nextHopID);
                             //str2 = str2 + std::string(nextHopID);
                             srcIpv4Mod->addNextHopStr(str1, str2);
-                            srcIpv4Mod->addKNextHop(1, destinationIE->getIpv4Address().getInt(), nextHopID);
+                            if(shellIndex == 1 && sourceNodeNum >= numOfSats){
+                                int fuckme = 0;
+                            }
+                            srcIpv4Mod->addKNextHop(shellIndex, destinationIE->getIpv4Address().getInt(), nextHopID);
+                            if( shellIndex == 1){
+                                int rezzy = srcIpv4Mod->getShellIndex();
+                                if (rezzy != -1){
+                                    int alright = 0;
+                                }
+                            }
                             fout << sourceNodeNum << " " << destinationIE->getIpv4Address().getInt() << " " << nextHopID << "\n";
                         }
                     }
@@ -354,7 +375,8 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
 }
 void LeoIpv4NetworkConfigurator::addNextHopInterface(cModule* source, cModule* destination, int interfaceID)
 {
-    nextHopInterfaceMap[source][destination] = interfaceID;
+        nextHopInterfaceMap[source][destination] = interfaceID;
+
 }
 
 void LeoIpv4NetworkConfigurator::removeNextHopInterface(cModule* source, cModule* destination)
@@ -372,11 +394,11 @@ cModule* LeoIpv4NetworkConfigurator::getNodeModule(int nodeNumber)
 {
     cModule* mod;
     if(nodeNumber < numOfSats){
-        std::string nodeName = std::string(networkName + ".satellite[" + std::to_string(nodeNumber) + "]");
+        std::string nodeName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(nodeNumber) + "]");
         mod = getModuleByPath(nodeName.c_str());
     }
     else{
-        std::string nodeName = std::string(networkName + ".groundStation[" + std::to_string(nodeNumber-numOfSats) + "]");
+        std::string nodeName = std::string(networkName + "[0].groundStation[" + std::to_string(nodeNumber-numOfSats) + "]");
         mod = getModuleByPath(nodeName.c_str());
     }
     return mod;
