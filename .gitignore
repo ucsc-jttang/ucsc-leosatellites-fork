@@ -6,6 +6,11 @@
 /simulations/Experiment2
 /simulations/Experiment3
 # local and generated files not to be committed
+.cproject
+.project
+.oppbuildspec
+.settings/language.settings.xml
+src/Makefile
 
 
 *_m.h
