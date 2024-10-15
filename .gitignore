@@ -89,3 +89,7 @@ xxx
 /tmp/
 /.computed/
 *.DS_Store
+.cproject
+.cproject
+.oppbuildspec
+.project
