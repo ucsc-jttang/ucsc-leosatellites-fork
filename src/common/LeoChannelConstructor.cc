@@ -285,6 +285,9 @@ void LeoChannelConstructor::setUpGSLinks()
         cModule *gsMod = getModuleByPath(gsName.c_str());
         GroundStationMobility* gsMobility = dynamic_cast<GroundStationMobility*>(gsMod->getSubmodule("mobility"));
         for(int satNum = 0; satNum < numOfSats; satNum++){
+            if (gsNum == 4 && satNum==624){
+                int hold = 0;
+            }
             std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
             cModule *satMod = getModuleByPath(satName.c_str());
             SatelliteMobility* satMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
@@ -301,10 +304,10 @@ void LeoChannelConstructor::setUpGSLinks()
                     }
                     setup:
                         if(!linkExists){
-                            if(shellIndex == 1 ){
-                                std::cout << "setting up link";
-                                int que = 2;
-                            }
+//                            if(shellIndex == 1 ){
+//                                std::cout << "setting up link";
+//                                int que = 2;
+//                            }
                             cGate *inGateSat;
                             cGate *outGateSat;
                             cGate *inGateGS;

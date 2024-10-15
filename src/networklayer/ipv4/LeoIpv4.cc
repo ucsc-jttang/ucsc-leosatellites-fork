@@ -20,7 +20,6 @@ Define_Module(LeoIpv4);
 
 LeoIpv4::LeoIpv4()
 {
-//    rng.seed(1);
 }
 
 LeoIpv4::~LeoIpv4()
@@ -35,7 +34,10 @@ void LeoIpv4::initialize(int stage)
     if (stage == INITSTAGE_LOCAL) {
         WATCH_MAP(nextHops);
         WATCH_MAP(nextHopsStr);
-
+        const char* parentNodeName = this->getParentModule()->getParentModule()->getFullName();
+        std::hash<std::string> hasher;
+        auto hashed = hasher(parentNodeName);
+        rng.seed(hashed);
     }
 }
 
@@ -52,11 +54,11 @@ void LeoIpv4::addNextHopStr(std::string destinationAddr, std::string nextInterfa
 }
 
 void LeoIpv4::clearNextHops(int shellIndex=0){
-    if(shellIndex == 0){
-        kNextHops.clear();
-    } else {
+//    if(shellIndex == 0){
+//        kNextHops.clear();
+//    } else {
         kNextHops[shellIndex].clear();
-    }
+//    }
     nextHopsStr.clear();
     nextHops.clear();
 }
@@ -101,11 +103,11 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
     }
     else {
         // use Ipv4 routing (lookup in routing table)
-        std::cout << "\nFinding best matching route for: " << destAddr.str() << endl;
+//        std::cout << "\nFinding best matching route for: " << destAddr.str() << endl;
         //const Ipv4Route *re = rt->findBestMatchingRoute(destAddr);
         int shell = -1;
         auto it = kNextHops.begin();
-
+        //Currently using rng seeded with unique groundstation name
         if(kNextHops.size() > 1){
             shell = rng()%kNextHops.size();
         } else {
@@ -113,6 +115,11 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
         }
 
         int interfaceID = kNextHops[shell][destAddr.getInt()];
+
+//        int interfaceID = kNextHops[1][destAddr.getInt()];
+
+        int testinterfaceID0 = kNextHops[0][destAddr.getInt()];
+        int testinterfaceID1 = kNextHops[1][destAddr.getInt()];
         // Simulator Limitation:shell0 interfaces cannot be reached by shell1 interfaces
         //if you are returning a packet to sender, you must send it back on the same shell path
         if (!interfaceID ){

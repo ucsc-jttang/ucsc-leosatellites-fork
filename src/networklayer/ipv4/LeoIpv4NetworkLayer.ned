@@ -100,18 +100,18 @@ module LeoIpv4NetworkLayer like INetworkLayer
                 @display("p=550,500;b=600,5");
         }
         
-//        queue: DropTailQueue {
-//        	parameters:
-//                @display("p=750,400;q=queue");
+        queue: DropTailQueue {
+        	parameters:
+                @display("p=750,400;q=queue");
 //                packetCapacity = 5;
-//        }
+        }
         
-//        queuePopper: PacketServer {
-//        	parameters:
-//        	    @display("p=875,400;q=queue");   
-//        	    processingTime = 500ms;
+        queuePopper: PacketServer {
+        	parameters:
+        	    @display("p=875,400;q=queue");   
+//        	    processingTime = 0ms;
 //        	    processingBitrate = 10Mbps;
-//        }
+        }
             
 
     connections allowunconnected:
@@ -139,12 +139,12 @@ module LeoIpv4NetworkLayer like INetworkLayer
         arp.ifOut --> lp.in++;
         arp.ifIn <-- lp.out++;
 
-//        ip.queueOut --> queue.in;
-//        queue.out --> queuePopper.in;
-//        queuePopper.out --> lp.in++;
+        ip.queueOut --> queue.in;
+        queue.out --> queuePopper.in;
+        queuePopper.out --> lp.in++;
         
         
-        ip.queueOut --> lp.in++;
+//        ip.queueOut --> lp.in++;
         ip.queueIn <-- lp.out++;
 
         lp.out++ --> { @display("m=s"); } --> ifOut;
