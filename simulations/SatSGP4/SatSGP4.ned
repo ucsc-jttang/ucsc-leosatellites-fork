@@ -33,6 +33,7 @@ module SatSGP4
         int shellIndex;
         int numOfSats; // Number of satellites
         int numOfGS; // Number of Mission Control Centers
+        int ownedGS; //Number of GS owned by the shell
         double incl;
         double alt;
         int satsPerPlane;
@@ -54,7 +55,7 @@ module SatSGP4
                 NoradModule.satPerPlane = parent.satsPerPlane;
                 NoradModule.planes = parent.numOfPlanes;
         }
-        groundStation[numOfGS]: GroundStationPPP {
+        groundStation[ownedGS]: GroundStationPPP {
             parameters:
                 @display("p=238.04,343.535;r=10;i=device/receiverdish");
         }
