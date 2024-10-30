@@ -85,7 +85,7 @@ void LeoIpv4NetworkConfigurator::assignIDtoModules()
 {
     for(int nodeNum = 0; nodeNum < numOfSats+numOfGS; nodeNum++){
         nodeModules[nodeNum] = getNodeModule(nodeNum);
-        std::cout << getNodeModule(nodeNum)->getFullPath() << endl;
+//        std::cout << getNodeModule(nodeNum)->getFullPath() << endl;
     }
 //    const char* name1 = getNodeModule(625)->getFullName();
 //    const char* name2 = getNodeModule(626)->getFullName();
