@@ -58,7 +58,7 @@ simple RandomPingApp like IApp
         double startTime @unit(s) = default(uniform(0s, this.sleepDuration + this.sendInterval)); // send first ping at startTime
         double stopTime @unit(s) = default(-1s); // time to finish sending, negative values mean forever
         volatile double sleepDuration @unit(s) = default(0s); // time spent in sleep between switching destinations
-        bool continuous = default(false);  // whether to continuously ping the destinations in a round-robin fashion
+        bool continuous = default(true);  // whether to continuously ping the destinations in a round-robin fashion
         bool printPing = default(false); // log to stdout
         string crcMode @enum("declared", "computed") = default("declared");
         string networkProtocol = default(""); // uses specified network protocol for communication; uses the address-specified default network protocol when the parameter is empty

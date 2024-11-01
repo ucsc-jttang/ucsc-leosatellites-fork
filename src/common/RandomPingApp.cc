@@ -541,7 +541,9 @@ void RandomPingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt, bool
 std::vector<L3Address> RandomPingApp::getAllAddresses()
 {
     std::vector<L3Address> result;
-    for (int i = 0; i <= 47; i++) {
+    //Hardcode the locations of the 46 ground stations
+    //45 for index by zero count
+    for (int i = 0; i <= 45; i++) {
         std::string nodeName = std::string("SatSGP4Network.shell[0].groundStation[" + std::to_string(i) + "]");
         cModule* mod = getModuleByPath(nodeName.c_str());
         IInterfaceTable *ift = dynamic_cast<IInterfaceTable*>(mod->getSubmodule("interfaceTable"));
