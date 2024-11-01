@@ -130,7 +130,7 @@ void RandomPingApp::parseDestAddressesPar()
     srcAddr = L3AddressResolver().resolve(par("srcAddr"));
     const char *destAddrs = par("destAddr");
     if (!strcmp(destAddrs, "*")) {
-        destAddresses = getAllAddresses();
+        destAddresses=getAllAddresses();
         std::hash<std::string> hasher;
         long hashed = hasher(seed.c_str());
         std::mt19937 rng;
@@ -209,6 +209,10 @@ void RandomPingApp::handleSelfMessage(cMessage *msg)
         if (destAddrIdx >= (int)destAddresses.size()) {
             if (continuous) {
                 destAddrIdx = destAddrIdx % destAddresses.size();
+                if(destAddrIdx ==0){
+                    //Keep updating the addresses to keep in line with update intervals
+                    parseDestAddressesPar();
+                }
             }
         }
     }
@@ -537,11 +541,10 @@ void RandomPingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt, bool
 std::vector<L3Address> RandomPingApp::getAllAddresses()
 {
     std::vector<L3Address> result;
-
-    int lastId = getSimulation()->getLastComponentId();
-
-    for (int i = 0; i <= lastId; i++) {
-        IInterfaceTable *ift = dynamic_cast<IInterfaceTable *>(getSimulation()->getModule(i));
+    for (int i = 0; i <= 47; i++) {
+        std::string nodeName = std::string("SatSGP4Network.shell[0].groundStation[" + std::to_string(i) + "]");
+        cModule* mod = getModuleByPath(nodeName.c_str());
+        IInterfaceTable *ift = dynamic_cast<IInterfaceTable*>(mod->getSubmodule("interfaceTable"));
         if (ift) {
             for (int j = 0; j < ift->getNumInterfaces(); j++) {
                 NetworkInterface *ie = ift->getInterface(j);
@@ -570,6 +573,18 @@ std::vector<L3Address> RandomPingApp::getAllAddresses()
     }
     return result;
 }
+
+//std::vector<L3Address> RandomPingApp::GSIP(int nodeNumber)
+//{
+//    std::vector<L3Address> result;
+//    for(int i=0;i<nodeNumber;i++){
+//        cModule* mod;
+//
+//        Ipv4Address nodeNumIp = "";
+//        result.push_back(L3Address(nodeNumIp));
+//    }
+//    return result;
+//}
 
 void RandomPingApp::finish()
 {
