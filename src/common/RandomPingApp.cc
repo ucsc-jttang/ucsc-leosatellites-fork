@@ -129,23 +129,32 @@ void RandomPingApp::parseDestAddressesPar()
 {
     srcAddr = L3AddressResolver().resolve(par("srcAddr"));
     const char *destAddrs = par("destAddr");
-    if (!strcmp(destAddrs, "*")) {
-        destAddresses=getAllAddresses();
-        std::hash<std::string> hasher;
-        long hashed = hasher(seed.c_str());
-        std::mt19937 rng;
-        rng.seed(hashed);
-        std::shuffle(destAddresses.begin(),destAddresses.end(),rng);
-    }
-    else {
-        cStringTokenizer tokenizer(destAddrs);
-        const char *token;
+    int selfId = par("selfId");
+    int startRange = par("startRange");
+    int endRange = par("endRange");
 
+    std::string temp = "";
+    if (!strcmp(destAddrs, "*")) {
+//        destAddresses=getAllAddresses();
+//        std::hash<std::string> hasher;
+//        long hashed = hasher(seed.c_str());
+//        std::mt19937 rng;
+//        rng.seed(hashed);
+//        std::shuffle(destAddresses.begin(),destAddresses.end(),rng);
+        for(int i =startRange; i<=endRange;i++){
+            if(i != selfId){
+                temp += "shell[0].groundStation[" + std::to_string(i) + "] ";
+            }
+         }
+    }
+//    else {
+        cStringTokenizer tokenizer(temp.c_str());
+        const char *token;
         while ((token = tokenizer.nextToken()) != nullptr) {
             L3Address addr = L3AddressResolver().resolve(token);
             destAddresses.push_back(addr);
         }
-    }
+//    }
 }
 
 void RandomPingApp::handleSelfMessage(cMessage *msg)

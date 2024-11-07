@@ -48,6 +48,9 @@ simple RandomPingApp like IApp
 {
     parameters:
 	   @class("inet::RandomPingApp");
+	   	int selfId = default(-1);
+	   	int startRange = default(-1);
+	   	int endRange = default(-1);
         string seed = default("");
         string destAddr = default(""); // destination address(es), separated by spaces, "*" means all IPv4/IPv6 interfaces in entire simulation
         string srcAddr = default(""); // source address (useful with multi-homing)

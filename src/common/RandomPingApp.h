@@ -57,6 +57,9 @@ class INET_API RandomPingApp : public ApplicationBase, public INetworkSocket::IC
     bool printPing = false;
     bool continuous = false;
     std::string seed;
+    int selfId;
+    int startRange;
+    int endRange;
 
     // state
     SocketMap socketMap;

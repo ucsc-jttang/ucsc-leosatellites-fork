@@ -19,6 +19,8 @@
 #include <inet/networklayer/ipv4/Ipv4.h>
 #include <inet/networklayer/common/NextHopAddressTag_m.h>
 #include <inet/linklayer/common/InterfaceTag_m.h>
+#include "inet/networklayer/common/L3AddressResolver.h"
+
 #include <random>
 #include <functional>
 namespace inet {
