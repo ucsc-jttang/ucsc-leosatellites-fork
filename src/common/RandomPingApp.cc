@@ -153,6 +153,11 @@ void RandomPingApp::parseDestAddressesPar()
         while ((token = tokenizer.nextToken()) != nullptr) {
             L3Address addr = L3AddressResolver().resolve(token);
             destAddresses.push_back(addr);
+            std::mt19937 rng;
+            std::hash<std::string> hasher;
+            long hashed = hasher(seed.c_str());
+            rng.seed(hashed);
+            std::shuffle(destAddresses.begin(),destAddresses.end(),rng);
         }
 //    }
 }
