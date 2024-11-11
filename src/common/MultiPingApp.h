@@ -5,8 +5,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 //
 
-#ifndef __INET_RANDOMPINGAPP_H
-#define __INET_RANDOMPINGAPP_H
+#ifndef __INET_MULTIPINGAPP_H
+#define __INET_MULTIPINGAPP_H
 
 //#endif
 
@@ -39,7 +39,7 @@ namespace inet {
  *
  * See NED file for detailed description of operation.
  */
-class INET_API RandomPingApp : public ApplicationBase, public INetworkSocket::ICallback
+class INET_API MultiPingApp : public ApplicationBase, public INetworkSocket::ICallback
 {
   protected:
     // parameters: for more details, see the corresponding NED parameters' documentation
@@ -117,8 +117,8 @@ class INET_API RandomPingApp : public ApplicationBase, public INetworkSocket::IC
     virtual void socketClosed(INetworkSocket *socket) override;
 
   public:
-    RandomPingApp();
-    virtual ~RandomPingApp();
+    MultiPingApp();
+    virtual ~MultiPingApp();
     int getPid() const { return pid; }
 };
 

@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 //
 
-#include "RandomPingApp.h"
+#include "MultiPingApp.h"
 
 #include <iostream>
 
@@ -48,17 +48,17 @@ namespace inet {
 
 using std::cout;
 
-Define_Module(RandomPingApp);
+Define_Module(MultiPingApp);
 
-Register_Class(RandomPingApp);
+Register_Class(MultiPingApp);
 
-simsignal_t RandomPingApp::rttSignal = registerSignal("rtt");
-simsignal_t RandomPingApp::numLostSignal = registerSignal("numLost");
-simsignal_t RandomPingApp::numOutOfOrderArrivalsSignal = registerSignal("numOutOfOrderArrivals");
-simsignal_t RandomPingApp::pingTxSeqSignal = registerSignal("pingTxSeq");
-simsignal_t RandomPingApp::pingRxSeqSignal = registerSignal("pingRxSeq");
+simsignal_t MultiPingApp::rttSignal = registerSignal("rtt");
+simsignal_t MultiPingApp::numLostSignal = registerSignal("numLost");
+simsignal_t MultiPingApp::numOutOfOrderArrivalsSignal = registerSignal("numOutOfOrderArrivals");
+simsignal_t MultiPingApp::pingTxSeqSignal = registerSignal("pingTxSeq");
+simsignal_t MultiPingApp::pingRxSeqSignal = registerSignal("pingRxSeq");
 
-const std::map<const Protocol *, const Protocol *> RandomPingApp::l3Echo( {
+const std::map<const Protocol *, const Protocol *> MultiPingApp::l3Echo( {
     { &Protocol::ipv4, &Protocol::icmpv4 },
     { &Protocol::ipv6, &Protocol::icmpv6 },
     { &Protocol::flooding, &Protocol::echo },
@@ -67,17 +67,17 @@ const std::map<const Protocol *, const Protocol *> RandomPingApp::l3Echo( {
     { &Protocol::wiseRoute, &Protocol::echo },
 });
 
-RandomPingApp::RandomPingApp()
+MultiPingApp::MultiPingApp()
 {
 }
 
-RandomPingApp::~RandomPingApp()
+MultiPingApp::~MultiPingApp()
 {
     cancelAndDelete(timer);
     socketMap.deleteSockets();
 }
 
-void RandomPingApp::initialize(int stage)
+void MultiPingApp::initialize(int stage)
 {
     ApplicationBase::initialize(stage);
 
@@ -126,7 +126,7 @@ void RandomPingApp::initialize(int stage)
     }
 }
 
-void RandomPingApp::parseDestAddressesPar()
+void MultiPingApp::parseDestAddressesPar()
 {
     srcAddr = L3AddressResolver().resolve(par("srcAddr"));
     const char *destAddrs = par("destAddr");
@@ -172,7 +172,7 @@ void RandomPingApp::parseDestAddressesPar()
     }
 }
 
-void RandomPingApp::handleSelfMessage(cMessage *msg)
+void MultiPingApp::handleSelfMessage(cMessage *msg)
 {
     if (msg->getKind() == PING_FIRST_ADDR) {
         srcAddr = L3AddressResolver().resolve(par("srcAddr"));
@@ -245,7 +245,7 @@ void RandomPingApp::handleSelfMessage(cMessage *msg)
     scheduleNextPingRequest(simTime(), msg->getKind() == PING_CHANGE_ADDR);
 }
 
-void RandomPingApp::handleMessageWhenUp(cMessage *msg)
+void MultiPingApp::handleMessageWhenUp(cMessage *msg)
 {
     if (msg->isSelfMessage())
         handleSelfMessage(msg);
@@ -260,7 +260,7 @@ void RandomPingApp::handleMessageWhenUp(cMessage *msg)
         startActiveOperationExtraTimeOrFinish(par("stopOperationExtraTime"));
 }
 
-void RandomPingApp::socketDataArrived(INetworkSocket *socket, Packet *packet)
+void MultiPingApp::socketDataArrived(INetworkSocket *socket, Packet *packet)
 {
 #ifdef INET_WITH_IPv4
     if (packet->getTag<PacketProtocolTag>()->getProtocol() == &Protocol::icmpv4) {
@@ -308,14 +308,14 @@ void RandomPingApp::socketDataArrived(INetworkSocket *socket, Packet *packet)
     }
 }
 
-void RandomPingApp::socketClosed(INetworkSocket *socket)
+void MultiPingApp::socketClosed(INetworkSocket *socket)
 {
     if (socket == currentSocket)
         currentSocket = nullptr;
     delete socketMap.removeSocket(socket);
 }
 
-void RandomPingApp::refreshDisplay() const
+void MultiPingApp::refreshDisplay() const
 {
     ApplicationBase::refreshDisplay();
 
@@ -324,13 +324,13 @@ void RandomPingApp::refreshDisplay() const
     getDisplayString().setTagArg("t", 0, buf);
 }
 
-void RandomPingApp::handleStartOperation(LifecycleOperation *operation)
+void MultiPingApp::handleStartOperation(LifecycleOperation *operation)
 {
     if (isEnabled())
         startSendingPingRequests();
 }
 
-void RandomPingApp::startSendingPingRequests()
+void MultiPingApp::startSendingPingRequests()
 {
     ASSERT(!timer->isScheduled());
     pid = getSimulation()->getUniqueNumber();
@@ -341,7 +341,7 @@ void RandomPingApp::startSendingPingRequests()
     scheduleNextPingRequest(-1, false);
 }
 
-void RandomPingApp::handleStopOperation(LifecycleOperation *operation)
+void MultiPingApp::handleStopOperation(LifecycleOperation *operation)
 {
     pid = -1;
     lastStart = -1;
@@ -360,7 +360,7 @@ void RandomPingApp::handleStopOperation(LifecycleOperation *operation)
     delayActiveOperationFinish(par("stopOperationTimeout"));
 }
 
-void RandomPingApp::handleCrashOperation(LifecycleOperation *operation)
+void MultiPingApp::handleCrashOperation(LifecycleOperation *operation)
 {
     pid = -1;
     lastStart = -1;
@@ -379,7 +379,7 @@ void RandomPingApp::handleCrashOperation(LifecycleOperation *operation)
     }
 }
 
-void RandomPingApp::scheduleNextPingRequest(simtime_t previous, bool withSleep)
+void MultiPingApp::scheduleNextPingRequest(simtime_t previous, bool withSleep)
 {
     simtime_t next;
     if (previous < SIMTIME_ZERO)
@@ -393,17 +393,17 @@ void RandomPingApp::scheduleNextPingRequest(simtime_t previous, bool withSleep)
         scheduleAt(next, timer);
 }
 
-void RandomPingApp::cancelNextPingRequest()
+void MultiPingApp::cancelNextPingRequest()
 {
     cancelEvent(timer);
 }
 
-bool RandomPingApp::isEnabled()
+bool MultiPingApp::isEnabled()
 {
     return par("destAddr").stringValue()[0] && (count == -1 || sentCount < count);
 }
 
-void RandomPingApp::sendPingRequest()
+void MultiPingApp::sendPingRequest()
 {
     char name[32];
     sprintf(name, "ping%ld", sendSeqNo);
@@ -480,7 +480,7 @@ void RandomPingApp::sendPingRequest()
     sentCount++;
 }
 
-void RandomPingApp::processPingResponse(int originatorId, int seqNo, Packet *packet)
+void MultiPingApp::processPingResponse(int originatorId, int seqNo, Packet *packet)
 {
     const auto& pingPayload = packet->peekDataAt(B(0), packet->getDataLength());
     if (originatorId != pid) {
@@ -521,7 +521,7 @@ void RandomPingApp::processPingResponse(int originatorId, int seqNo, Packet *pac
     countPingResponse(B(pingPayload->getChunkLength()).get(), seqNo, rtt, isDup);
 }
 
-void RandomPingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt, bool isDup)
+void MultiPingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt, bool isDup)
 {
     EV_INFO << "Ping reply #" << seqNo << " arrived, rtt=" << (rtt == SIMTIME_ZERO ? "unknown" : rtt.str().c_str()) << (isDup ? ", duplicated" : "") << "\n";
     emit(pingRxSeqSignal, seqNo);
@@ -564,7 +564,7 @@ void RandomPingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt, bool
     }
 }
 
-std::vector<L3Address> RandomPingApp::getAllAddresses()
+std::vector<L3Address> MultiPingApp::getAllAddresses()
 {
     std::vector<L3Address> result;
     //Hardcode the locations of the 46 ground stations
@@ -602,7 +602,7 @@ std::vector<L3Address> RandomPingApp::getAllAddresses()
     return result;
 }
 
-//std::vector<L3Address> RandomPingApp::GSIP(int nodeNumber)
+//std::vector<L3Address> MultiPingApp::GSIP(int nodeNumber)
 //{
 //    std::vector<L3Address> result;
 //    for(int i=0;i<nodeNumber;i++){
@@ -614,7 +614,7 @@ std::vector<L3Address> RandomPingApp::getAllAddresses()
 //    return result;
 //}
 
-void RandomPingApp::finish()
+void MultiPingApp::finish()
 {
     if (sendSeqNo == 0) {
         if (printPing)
