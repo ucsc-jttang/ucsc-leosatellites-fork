@@ -48,14 +48,11 @@ simple MultiPingApp like IApp
 {
     parameters:
 	   @class("inet::MultiPingApp");
-	   	int selfId = default(-1);
-	   	int startRange = default(-1);
-	   	int endRange = default(-1);
         string seed = default("");
         string destAddr = default(""); // destination address(es), separated by spaces, "*" means all IPv4/IPv6 interfaces in entire simulation
         string srcAddr = default(""); // source address (useful with multi-homing)
         int packetSize @unit(B) = default(56B); // of ping payload, in bytes
-        volatile double sendInterval @unit(s) = default(1s); // time to wait between pings (can be random)
+        volatile double sendInterval @unit(s) = default(.05s); // time to wait between pings (can be random)
         int hopLimit = default(-1); // TTL or hopLimit for IP packets
         int count = default(-1); // number of pings requests sent to a single destination address, -1 means continuously (only first address will be used from destAddr)
         double startTime @unit(s) = default(uniform(0s, this.sleepDuration + this.sendInterval)); // send first ping at startTime
@@ -69,14 +66,12 @@ simple MultiPingApp like IApp
         @lifecycleSupport;
         double stopOperationExtraTime @unit(s) = default(-1s);    // extra time after lifecycle stop operation finished
         double stopOperationTimeout @unit(s) = default(2s);    // timeout value for lifecycle stop operation
-        @signal[rtt47](type=simtime_t);
-        @signal[rtt48](type=simtime_t);
+        @signal[rtt](type=simtime_t);
         @signal[numLost](type=long);
         @signal[numOutOfOrderArrivals](type=long);
         @signal[pingTxSeq](type=long);
         @signal[pingRxSeq](type=long);
-        @statistic[rtt47](title="ping round-trip time"; unit=s; record=histogram,vector; interpolationmode=none);
-        @statistic[rtt48](title="ping round-trip time"; unit=s; record=histogram,vector; interpolationmode=none);
+        @statistic[rtt](title="ping round-trip time"; unit=s; record=histogram,vector; interpolationmode=none);
         @statistic[numLost](title="pings lost"; record=last,vector; interpolationmode=none);
         @statistic[numOutOfOrderArrivals](title="ping out-of-order arrivals"; record=last,vector; interpolationmode=none);
         @statistic[pingTxSeq](title="ping tx seq"; record=count,vector; interpolationmode=none);
