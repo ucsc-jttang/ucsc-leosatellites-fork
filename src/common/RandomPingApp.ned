@@ -48,6 +48,7 @@ simple RandomPingApp like IApp
 {
     parameters:
 	   @class("inet::RandomPingApp");
+	   	int enabled = default(-1);
 	   	int selfId = default(-1);
 	   	int startRange = default(-1);
 	   	int endRange = default(-1);

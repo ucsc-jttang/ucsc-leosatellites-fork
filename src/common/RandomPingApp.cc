@@ -89,6 +89,7 @@ void RandomPingApp::initialize(int stage)
         sendIntervalPar = &par("sendInterval");
         sleepDurationPar = &par("sleepDuration");
         hopLimit = par("hopLimit");
+        enabled = par("enabled");
         count = par("count");
 //        if (count <= 0 && count != -1)
 //            throw cRuntimeError("Invalid count=%d parameter (should use -1 or a larger than zero value)", count);
@@ -223,8 +224,10 @@ void RandomPingApp::handleSelfMessage(cMessage *msg)
 
     ASSERT2(msg->getKind() == PING_SEND, "Unknown kind in self message.");
 
-    // send a ping
-    sendPingRequest();
+    if (enabled != -1){
+        // send a ping
+        sendPingRequest();
+    }
 
     if (count > 0 && sendSeqNo % count == 0) {
         // choose next dest address
@@ -241,8 +244,10 @@ void RandomPingApp::handleSelfMessage(cMessage *msg)
         }
     }
 
-    // then schedule next one if needed
-    scheduleNextPingRequest(simTime(), msg->getKind() == PING_CHANGE_ADDR);
+    if(enabled != -1){
+        // then schedule next one if needed
+        scheduleNextPingRequest(simTime(), msg->getKind() == PING_CHANGE_ADDR);
+    }
 }
 
 void RandomPingApp::handleMessageWhenUp(cMessage *msg)

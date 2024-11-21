@@ -61,6 +61,7 @@ class INET_API RandomPingApp : public ApplicationBase, public INetworkSocket::IC
     int selfId;
     int startRange;
     int endRange;
+    int enabled;
 
     // state
     SocketMap socketMap;
