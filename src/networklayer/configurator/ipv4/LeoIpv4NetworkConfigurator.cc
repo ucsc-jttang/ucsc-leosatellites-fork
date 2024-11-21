@@ -92,7 +92,7 @@ void LeoIpv4NetworkConfigurator::assignIDtoModules()
 //    const char* namen = getNodeModule(6)->getFullName();
 //    std::string pathn = getNodeModule(6)->getFullPath();
 //    std::string path1 = getNodeModule(625)->getFullPath();
-    std::string path2 = getNodeModule(626)->getFullPath();
+//    std::string path2 = getNodeModule(626)->getFullPath();
 
 }
 

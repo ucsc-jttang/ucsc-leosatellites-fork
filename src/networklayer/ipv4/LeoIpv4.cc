@@ -154,7 +154,7 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
     if (!hopFound) {    // no route found
         EV_WARN << "unroutable, sending ICMP_DESTINATION_UNREACHABLE, dropping packet\n";
 //        std::cout << "unroutable, sending ICMP_DESTINATION_UNREACHABLE, dropping packet\n";
-        std::cout << "unroutable, in " << this->getParentModule()->getParentModule()->getFullName() << "to: " << L3AddressResolver().findHostWithAddress(destAddr)->getFullName() << std::endl;
+//        std::cout << "unroutable, in " << this->getParentModule()->getParentModule()->getFullName() << "to: " << L3AddressResolver().findHostWithAddress(destAddr)->getFullName() << std::endl;
 //        std::cout << "Source addr: "<< sourceAddr.str() << "-> destAddr: " << destAddr.str() << endl;
 
         numUnroutable++;
