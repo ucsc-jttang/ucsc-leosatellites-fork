@@ -3,6 +3,8 @@ import json
 import os
 import re
 
+this_dir, this_filename = os.path.split(__file__)
+
 def getInner(json):
     key = next(iter(json.keys()))
     return (json[key])
@@ -40,7 +42,9 @@ def getReceiverGSNum(module_name):
 
 def make_mappings():
     # Path to the mappings.txt file
-    mappings_file = 'mappings.txt'
+    
+
+    mappings_file = os.path.join(this_dir, "mappings.txt")
 
     # Ensure the file exists
     try:
@@ -135,25 +139,27 @@ def main():
     packetsDropped = {}
     endToEndTimes = {}
     queueTimes = {}
+    stat_dict = {}
 
     for i in range(len(base_names)):
         for j in range(repetitions):
             for k in range(len(fileNames)):
                 fileName = base_names[i] + str(j) + fileNames[k]
+                absolute_fileName = os.path.join(this_dir, fileName)
                 try:
-                    with open(fileName, 'r') as file:
+                    with open(absolute_fileName, 'r') as file:
                         jsons[fileName] = getInner(json.loads(file.read()))
-                        match k:
-                            case 0:
-                                packetsSent[base_names[i] + str(j)] = getScalars((jsons[fileName]))
-                            case 1:
-                                packetsRecieved[base_names[i] + str(j)] = getScalars((jsons[fileName]))
-                            # case 2:
-                                packetsDropped[base_names[i] + str(j)] = getScalars((jsons[fileName]))
-                            case 3:
-                                endToEndTimes[base_names[i] + str(j)] = getVectors((jsons[fileName]))
-                            case _:
-                                print("Error")
+
+                        if k == 0:
+                            packetsSent[base_names[i] + str(j)] = getScalars((jsons[fileName]))
+                        elif k == 1:
+                            packetsRecieved[base_names[i] + str(j)] = getScalars((jsons[fileName]))
+                        elif k == 2:
+                            packetsDropped[base_names[i] + str(j)] = getScalars((jsons[fileName]))
+                        elif k == 3:
+                            endToEndTimes[base_names[i] + str(j)] = getVectors((jsons[fileName]))
+                        else:
+                            print("Error")
                 except FileNotFoundError:
                     print(f"Error: File {fileName} not found!")
                     exit(1)
@@ -178,10 +184,12 @@ def main():
             # print(foreground_packets_recieved)
             # TODO sim-times
             loss_rate = all_packets_lost / all_packets_sent
-            throughput = foreground_packets_recieved*1275/600
-            print("throughput: " + throughput)
-            print("end_to_end_delay: " + str(end_to_end_delay)) # check the average by hand...?
-            print("loss_rate: " + str(loss_rate))
+            throughput = foreground_packets_recieved*1275/(600)
+            # stat_dict[base_name]
+            print(base_name+str(rep) + " stats:")
+            print("\tthroughput: " + str(throughput) + "bps")
+            print("\tend_to_end_delay: " + str(end_to_end_delay) + "s") # check the average by hand...?
+            print("\tloss_rate: " + str(loss_rate) + "%")
 
 
 if __name__ == "__main__":
