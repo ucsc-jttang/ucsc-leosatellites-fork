@@ -393,7 +393,6 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
     }
     mod->setSubmoduleVectorSize("ppp", submoduleVectorSize);
     cModule *module = nullptr;
-
     for(int i = 0; i < submoduleVectorSize; i++){
         if(!mod->getSubmodule("ppp", i)){
             cGate *srcGateOut = mod->gateHalf("pppg", cGate::OUTPUT, i);  //ADD BACK WITH RELEVANT CODE AT SOME POINT
@@ -417,11 +416,10 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
             nlModule->setGateSize("out", nlOutGateSize+1);
             nlModule->setGateSize("in", nlInGateSize+1);
 
+
             cGate *nlOutGate = nlModule->gate("out", nlOutGateSize);
             cGate *nlInGate = nlModule->gate("in", nlInGateSize);
             nlOutGate->connectTo(upLayerInGate);
-
-
             upLayerOutGate->connectTo(nlInGate);
 
             physOutGate->connectTo(srcGateOut, idealChannel);
