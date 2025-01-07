@@ -294,7 +294,6 @@ void LeoChannelConstructor::setUpGSLinks()
                     }
                     setup:
                         if(!linkExists){
-
                             cGate *inGateSat;
                             cGate *outGateSat;
                             cGate *inGateGS;
@@ -384,7 +383,6 @@ void LeoChannelConstructor::setUpGSLinks()
 void LeoChannelConstructor::updatePPPModules(cModule *mod)
 {
     cModuleType *pppModuleType = cModuleType::get("inet.linklayer.ppp.PppInterface");
-
     int submoduleVectorSize = mod->gateSize("pppg");
     for (SubmoduleIterator it(mod); !it.end(); ++it) {
         cModule *submodule = *it;
@@ -394,12 +392,8 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
         }
     }
     mod->setSubmoduleVectorSize("ppp", submoduleVectorSize);
-
     cModule *module = nullptr;
-    cModule *queueMod = nullptr;
-    if (shellIndex == 1) {
-        int puasing = 0;
-    }
+
     for(int i = 0; i < submoduleVectorSize; i++){
         if(!mod->getSubmodule("ppp", i)){
             cGate *srcGateOut = mod->gateHalf("pppg", cGate::OUTPUT, i);  //ADD BACK WITH RELEVANT CODE AT SOME POINT
@@ -426,16 +420,12 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
             cGate *nlOutGate = nlModule->gate("out", nlOutGateSize);
             cGate *nlInGate = nlModule->gate("in", nlInGateSize);
             nlOutGate->connectTo(upLayerInGate);
-            //queue at output
-//            nlOutGate->connectTo(queueIn, idealChannel3);
-//            queueOut->connectTo(upLayerInGate, idealChannel4);
 
 
             upLayerOutGate->connectTo(nlInGate);
 
             physOutGate->connectTo(srcGateOut, idealChannel);
             srcGateIn->connectTo(physInGate, idealChannel2);
-
             module->finalizeParameters();
             module->buildInside();
             module->scheduleStart(simTime());
@@ -475,7 +465,6 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
             // configure routing table?
         }
     }
-
 }
 
 void LeoChannelConstructor::prepareInterface(NetworkInterface *interfaceEntry)
