@@ -27,10 +27,12 @@ import leosatellites.common.LeoChannelConstructor;
 // the new mdodels being used such as the SatelliteNetworkConfigurator which will periodically run Dijkstra's
 // algorthm to re establish routes in a dynamic satellite network.
 //
+// numofGS to keep track of all of the GS
+//owned GS to make sure the additional shells do not need to initialize their own ground stations
 module SatSGP4
 {
     parameters:
-        int shellIndex;
+        int shellIndex; // Index of the shell in the array
         int numOfSats; // Number of satellites
         int numOfGS; // Number of Mission Control Centers
         int ownedGS; //Number of GS owned by the shell
@@ -64,6 +66,7 @@ module SatSGP4
         }
     connections allowunconnected:
 }
+//Aggregtes SatSGP4 modules
 network SatSGP4Network {
     parameters:
         int numOfShells;

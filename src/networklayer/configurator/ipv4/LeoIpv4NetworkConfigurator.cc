@@ -85,14 +85,7 @@ void LeoIpv4NetworkConfigurator::assignIDtoModules()
 {
     for(int nodeNum = 0; nodeNum < numOfSats+numOfGS; nodeNum++){
         nodeModules[nodeNum] = getNodeModule(nodeNum);
-//        std::cout << getNodeModule(nodeNum)->getFullPath() << endl;
     }
-//    const char* name1 = getNodeModule(625)->getFullName();
-//    const char* name2 = getNodeModule(626)->getFullName();
-//    const char* namen = getNodeModule(6)->getFullName();
-//    std::string pathn = getNodeModule(6)->getFullPath();
-//    std::string path1 = getNodeModule(625)->getFullPath();
-//    std::string path2 = getNodeModule(626)->getFullPath();
 
 }
 
@@ -122,10 +115,6 @@ void LeoIpv4NetworkConfigurator::establishInitialISLs()
     }
     else {
 
-//        std::ofstream outfile;
-//        outfile.open("sourceISLMods.txt",std::ios_base::app);
-        int i = 0;
-
         //igraph_vector_int_init(&islVec, numOfISLs*2); //two vecs needed for each ISL
         igraph_vector_int_init(&islVec, 0);
         unsigned int islVecIterator = 0;
@@ -149,28 +138,10 @@ void LeoIpv4NetworkConfigurator::establishInitialISLs()
 
                     SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getModuleByPath(".mobility"));
                     satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-//                    outfile << "i=" << i << ":" << sourceSatMobility->getFullPath() << destSatMobility->getFullPath() <<  endl;
-                    i++;
 
                     islVecIterator = islVecIterator + 2;
-    //                for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
-    //                    cGate* srcGate = satMod->gate("pppg$o", i);
-    //                    if(srcGate->isConnected()){
-    //                        cChannel *chan = srcGate->getChannel();
-    //                        cModule* destModule = srcGate->getPathEndGate()->getOwnerModule()->getParentModule()->getParentModule();
-    //                        //std::cout << "\n" << destModA->getFullName() << " - " << destModule->getFullName() << endl;
-    //                        if(destModA == destModule){
-    //                            std::string mobilityName = destModA->getModuleByPath(".mobility")->getNedTypeName();
-    //                            double distance = 0;
-    //                            if(mobilityName == "leosatellites.mobility.SatelliteMobility"){
-    //                                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getModuleByPath(".mobility"));
-    //                                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-    //                            }
-    //                        }
-    //                    }
-    //                }
+
                 }
-//                outfile << endl;
                 int destSatNumB = (satNum + satPerPlane);// % totalSats;
                 if(destSatNumB < numOfSats){
                     cModule *destModB = nodeModules.find(destSatNumB)->second;
@@ -180,27 +151,9 @@ void LeoIpv4NetworkConfigurator::establishInitialISLs()
 
                     SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModB->getModuleByPath(".mobility"));
                     satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-//                    outfile << "i=" << i << ":" << sourceSatMobility->getFullPath() << destSatMobility->getFullPath() <<  endl;
-                    //islVecIterator = islVecIterator + 2;
-    //                for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
-    //                    cGate* srcGate = satMod->gate("pppg$o", i);
-    //                    if(srcGate->isConnected()){
-    //                        cChannel *chan = srcGate->getChannel();
-    //                        cModule* destModule = srcGate->getPathEndGate()->getOwnerModule()->getParentModule()->getParentModule();
-    //                        if(destModB == destModule){
-    //                            std::string mobilityName = destModB->getModuleByPath(".mobility")->getNedTypeName();
-    //                            double distance = 0;
-    //                            if(mobilityName == "leosatellites.mobility.SatelliteMobility"){
-    //                                SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModB->getModuleByPath(".mobility"));
-    //                                satelliteISLMobilityModules[sourceSatMobility].push_back(destSatMobility);
-    //                            }
-    //                        }
-    //                    }
-    //                }
                 }
             }
         }
-//        outfile << endl;
         fillNextHopInterfaceMap();
     }
 }
@@ -257,16 +210,8 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
             //}
         }
     }
-//    std::ofstream outfile3;
-//    outfile3.open("weightsVec.txt",std::ios_base::app);
-//    for (int i = 0; i < igraph_vector_size(&weightsVec); i++) {
-//        outfile3 << "i=" << igraph_vector_get(&weightsVec, i) <<  endl;
-//    }
-//    outfile3 << endl;
 
-//    What is this??
-//    Check here for usage of ISLVec and gsTup. GsTup
-    //std::cout << "\nOG WEIGHTS VEC SIZE: " << igraph_vector_size(&weightsVec) << endl;
+
     int numberOfGSLinks = groundStationLinks.size();
     for(int i = 0; i < numberOfGSLinks; i++){ //TODO USE ATTRIBUTE NAMES TO
         std::tuple<int, int, double> gsTup = groundStationLinks.front();
@@ -280,18 +225,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
         weightsVecIterator++;
     }
 
-//    std::ofstream outfile4;
-//    outfile4.open("weightsVec2.txt",std::ios_base::app);
-//    for (int i = 0; i < igraph_vector_size(&weightsVec); i++) {
-//        outfile4 << "i=" << igraph_vector_get(&weightsVec, i) <<  endl;
-//    }
-//    outfile4 << endl;
-
-    //igraph_vector_int_resize(&islVecCopy, weightsVecIterator*2);
-    //igraph_vector_resize(&weightsVec, weightsVecIterator);
-
-    //std::cout << "\nISL VEC SIZE: " << igraph_vector_int_size(&islVecCopy) << endl;
-    //std::cout << "\nWEIGHT VEC SIZE: " << igraph_vector_size(&weightsVec) << endl;
     igraph_empty(&constellationTopology, numOfSats+numOfGS, IGRAPH_UNDIRECTED);
 
     igraph_add_edges(&constellationTopology, &islVecCopy, 0);
@@ -305,21 +238,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
 
     igraph_vector_int_list_init(&vertexPaths, 1);
     igraph_vector_int_list_init(&edgePaths, 1);
-
-
-
-
-//    std::ofstream outfile2;
-//    outfile2.open("locations.txt",std::ios_base::app);
-//    for(int nodeNum = 0; nodeNum < nodeModules.size()-2; nodeNum++){
-//        cModule *satMod = nodeModules.find(nodeNum)->second;
-//        SatelliteMobility* satMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
-//        double latitude = satMobility->getLatitude();
-//        double longitude = satMobility->getLongitude();
-//        double altitude = satMobility->getAltitude();
-//        outfile2 << "i=" << nodeNum << ":" << latitude << "," << longitude << "," << altitude << endl;
-//    }
-//    outfile2 << endl;
 
 
 
@@ -338,22 +256,13 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                 int sourceNodeNum = igraph_vector_int_get(path, 0);
                 int nextHopNodeNum = igraph_vector_int_get(path, 1);
                 int destinationNodeNum = igraph_vector_int_get(path, igraph_vector_int_size(path)-1);
-                //std::cout << "\nSOURCE NUM: " << sourceNodeNum << endl;
 
 
                 cModule *nextHopMod = nodeModules.find(nextHopNodeNum)->second;
                 cModule *destMod = nodeModules.find(destinationNodeNum)->second;
-                //std::cout << "\nDEST NUM: " << nextHopMod->getFullName() << endl;
-                //std::cout << "\nNEXT HOP NUM: " << destMod->getFullName() << endl;
                 if(sourceNodeNum != destinationNodeNum){
-//                    if((sourceMod->getFullPath().find("shell[4].satellite[438]", 0)!= std::string::npos) && destMod->getFullPath().find("groundStation[52]",0)!= std::string::npos){
-//                        std::cout << "\n NEXT HOP ID FOUND FOR " << sourceMod->getFullName() << "NextHop is" << nextHopMod->getFullPath() << "For dest: " << destMod->getFullName()<< endl;
-//                    }
                     int nextHopID = nextHopInterfaceMap.find(sourceMod)->second.find(nextHopMod)->second;
-//                    if(sourceMod->getFullName() == "groundStation[50]" && shellIndex >= 2){
-//                        //This is outputting gs0 as next hop for 432 to 626
-//                        std::cout << "\n NEXT HOP ID FOUND FOR " << sourceMod->getFullName() << "NextHop is" << nextHopMod->getFullName() << "For dest: " << destMod->getFullName()<< endl;
-//                    }
+
                     IInterfaceTable* destIft = dynamic_cast<IInterfaceTable*>(destMod->getSubmodule("interfaceTable"));
                     for (size_t j = 0; j < destIft->getNumInterfaces(); j++) {
                         NetworkInterface *destinationIE = destIft->getInterface(j);
@@ -361,12 +270,10 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                             srcIpv4Mod->addNextHop(destinationIE->getIpv4Address().getInt(),nextHopID);
                             std::string str1 = destMod->getFullName();
                             std::string str2 = nextHopMod->getFullName() + std::to_string(nextHopID);
-                            //str2 = str2 + std::string(nextHopID);
                             srcIpv4Mod->addNextHopStr(str1, str2);
 
                             srcIpv4Mod->addKNextHop(shellIndex, destinationIE->getIpv4Address().getInt(), nextHopID);
 
-//                            fout << sourceNodeNum << " " << destinationIE->getIpv4Address().getInt() << " " << nextHopID << "\n";
                         }
                     }
                 }
@@ -399,7 +306,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                                 if (!destinationIE->isLoopback()){
                                     srcIpv4Mod->addNextHop(destinationIE->getIpv4Address().getInt(),nextHopID);
                                     srcIpv4Mod->addKNextHop(i+1, destinationIE->getIpv4Address().getInt(), nextHopID);
-//                                    fout << sourceNodeNum << " " << destinationIE->getIpv4Address().getInt() << " " << nextHopID << "\n";
                                 }
                             }
                         }
@@ -436,7 +342,6 @@ void LeoIpv4NetworkConfigurator::removeNextHopInterface(cModule* source, cModule
 void LeoIpv4NetworkConfigurator::addGSLinktoTopologyGraph(int gsNum, int destNum, double weight)
 {
     groundStationLinks.push(std::make_tuple(gsNum+numOfSats, destNum, weight));
-    //groundStation[0] = index+numOfSats to get the node number. E.g. satellite[499] = 499, groundStation[0] = 500
 }
 
 cModule* LeoIpv4NetworkConfigurator::getNodeModule(int nodeNumber)
@@ -517,7 +422,6 @@ double LeoIpv4NetworkConfigurator::computeLinkWeight(Link *link, const char *met
 
 double LeoIpv4NetworkConfigurator::computeWiredLinkWeight(Link *link, const char *metric, cXMLElement *parameters)
 {
-    //std::cout << "\n Metric: " << metric << endl;
     Topology::Link *linkOut = static_cast<Topology::Link *>(static_cast<Topology::Link *>(link));
     if (!strcmp(metric, "hopCount"))
         return 1;

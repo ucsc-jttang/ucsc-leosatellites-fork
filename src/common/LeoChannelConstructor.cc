@@ -140,7 +140,6 @@ void LeoChannelConstructor::setUpSimulation()
                 outGateSat2 = gatePair2.second;
 
                 //cChannel *channel = channelType->create("channel");
-//                mobility stuff is used for distances?
                 SatelliteMobility* destSatMobility = dynamic_cast<SatelliteMobility*>(destModA->getSubmodule("mobility"));
                 //configurator->addToISLMobilityMap(dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility")), destSatMobility);
                 double distance = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"))->getDistance(destSatMobility->getLatitude(), destSatMobility->getLongitude(), destSatMobility->getAltitude())*1000;
@@ -262,17 +261,10 @@ void LeoChannelConstructor::updateChannels()
                 std::string dString = std::to_string(distance) + "ms";
                 param.parse(dString.c_str());
                 chan->par("datarate").parse("10Mbps");
-//                chan->par("ber").parse(".0001");
-//                chan->par("datarate").parse("1bps");
-//                chan->par("ber").parse(".0001");
 
                 cPar& param2 = chan2->par("delay");
                 param2.parse(dString.c_str());
                 chan2->par("datarate").parse("10Mbps");
-//                chan2->par("ber").parse(".0001");
-
-//                chan2->par("datarate").parse("1bps");
-//                chan2->par("ber").parse(".0001");
             }
         }
     }
@@ -285,9 +277,7 @@ void LeoChannelConstructor::setUpGSLinks()
         cModule *gsMod = getModuleByPath(gsName.c_str());
         GroundStationMobility* gsMobility = dynamic_cast<GroundStationMobility*>(gsMod->getSubmodule("mobility"));
         for(int satNum = 0; satNum < numOfSats; satNum++){
-            if (gsNum == 4 && satNum==624){
-                int hold = 0;
-            }
+
             std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
             cModule *satMod = getModuleByPath(satName.c_str());
             SatelliteMobility* satMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
@@ -304,10 +294,7 @@ void LeoChannelConstructor::setUpGSLinks()
                     }
                     setup:
                         if(!linkExists){
-//                            if(shellIndex == 1 ){
-//                                std::cout << "setting up link";
-//                                int que = 2;
-//                            }
+
                             cGate *inGateSat;
                             cGate *outGateSat;
                             cGate *inGateGS;
@@ -397,8 +384,6 @@ void LeoChannelConstructor::setUpGSLinks()
 void LeoChannelConstructor::updatePPPModules(cModule *mod)
 {
     cModuleType *pppModuleType = cModuleType::get("inet.linklayer.ppp.PppInterface");
-    cModuleType *dropTailQueueModuleType = cModuleType::get("inet.queueing.queue.DropTailQueue");
-    cModuleType *packetBufferModuleType = cModuleType::get("inet.queueing.buffer.PacketBuffer");
 
     int submoduleVectorSize = mod->gateSize("pppg");
     for (SubmoduleIterator it(mod); !it.end(); ++it) {
@@ -409,9 +394,6 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
         }
     }
     mod->setSubmoduleVectorSize("ppp", submoduleVectorSize);
-
-    cModule *bufferModule = nullptr;
-//    bufferModule = packetBufferModuleType->create("packetBuffer", mod);
 
     cModule *module = nullptr;
     cModule *queueMod = nullptr;
@@ -424,14 +406,7 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
             cGate *srcGateIn = mod->gateHalf("pppg", cGate::INPUT, i);
 
             module = pppModuleType->create("ppp", mod, i);
-//            queueMod = dropTailQueueModuleType->create(("queue"+ std::to_string(i)).c_str(), mod);
-//            queueMod->par("bufferModule") = "packetQueue";
 
-//            module->par("queueModule") = ("queue"+ std::to_string(i)).c_str();
-//            cGate *queueIn = queueMod->gate("in");
-//            cGate *queueOut = queueMod->gate("out");
-
-//          Garbage starts here. All PPP Modules (satellite and GS) are considered ideal channels!?!??!
             cChannelType *idealChannelType = cChannelType::get("ned.IdealChannel");
             cChannel *idealChannel = idealChannelType->create("idealChannel");
             cChannel *idealChannel2 = idealChannelType->create("idealChannel");
@@ -460,12 +435,6 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
 
             physOutGate->connectTo(srcGateOut, idealChannel);
             srcGateIn->connectTo(physInGate, idealChannel2);
-
-//            queueMod->finalizeParameters();
-//            queueMod->buildInside();
-//            queueMod->scheduleStart(simTime());
-//            queueMod->callInitialize();  //error here - trying to initisalise already existing module.
-
 
             module->finalizeParameters();
             module->buildInside();
@@ -506,21 +475,7 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
             // configure routing table?
         }
     }
-//    cModule *nlModule = mod->getSubmodule("nl");
-//    int nlInGateSize = nlModule->gateSize("in");
-//    nlModule->setGateSize("in", nlInGateSize+1);
-//    cGate *nlInGate = nlModule->gate("in", nlInGateSize);
-//
-//    cModule *cbModule = mod->getSubmodule("cb");
-//    int cbOutGateSize = cbModule->gateSize("out");
-//    cbModule->setGateSize("out", cbOutGateSize+1);
-//    cGate *cbOutGate = cbModule->gate("out", cbOutGateSize);
-//
-//    cModule *queue = mod->getSubmodule("inputQueue");
-//    cGate *queueOutGate = queue->gate("out");
-//    cGate *queueInGate = queue->gate("in");
-//    cbOutGate->connectTo(queueInGate);
-//    queueOutGate->connectTo(nlInGate);
+
 }
 
 void LeoChannelConstructor::prepareInterface(NetworkInterface *interfaceEntry)

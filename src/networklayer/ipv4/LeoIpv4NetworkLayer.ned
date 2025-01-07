@@ -29,8 +29,9 @@ import inet.networklayer.ipv4.Icmp;
 import inet.networklayer.ipv4.IIpv4;
 import inet.networklayer.ipv4.Icmp;
 import leosatellites.networklayer.ipv4.LeoIpv4RoutingTable;
-import inet.queueing.queue.DropTailQueue;
-import inet.queueing.server.PacketServer;
+//example of adding something in
+//import inet.queueing.queue.DropTailQueue;
+//import inet.queueing.server.PacketServer;
 
 //
 // Network layer of an IPv4 node.
@@ -99,7 +100,7 @@ module LeoIpv4NetworkLayer like INetworkLayer
             parameters:
                 @display("p=550,500;b=600,5");
         }
-        
+//        Example of adding in a queue
 //        queue: DropTailQueue {
 //        	parameters:
 //                @display("p=750,400;q=queue");
@@ -139,6 +140,7 @@ module LeoIpv4NetworkLayer like INetworkLayer
         arp.ifOut --> lp.in++;
         arp.ifIn <-- lp.out++;
 
+//		example of adding in a queue
 //        ip.queueOut --> queue.in;
 //        queue.out --> queuePopper.in;
 //        queuePopper.out --> lp.in++;
