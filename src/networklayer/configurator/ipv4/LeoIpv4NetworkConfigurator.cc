@@ -159,7 +159,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
         std::filesystem::create_directory(filePrefix);
     }
 
-
     for (int nodeNum = 0; nodeNum < numOfSats+numOfGS; nodeNum++) {
         cModule* mod = nodeModules.find(nodeNum)->second;
         dynamic_cast<LeoIpv4 *>(mod->getModuleByPath(".ipv4.ip"))->clearNextHops(shellIndex);
@@ -176,14 +175,10 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
     igraph_vector_init(&weightsVec, 0);
     unsigned int islVecIterator = 0;
     unsigned int weightsVecIterator = 0;
-//    for (auto iter = cbegin(satelliteISLMobilityModules); iter != cend(satelliteISLMobilityModules); ++iter) {
-
     for (int i = 0; i < nodeModules.size() - numOfGS; i++) {
         cModule* satMod = nodeModules.find(i)->second;
         SatelliteMobility* satMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
         std::vector<SatelliteMobility*> mobVec = satelliteISLMobilityModules.find(satMobility)->second;
-
-
         for (SatelliteMobility* iter2 : mobVec) {
             //if(iter->first != iter2){
                 //std::cout << "\nSOURCE SAT: " << iter->first->getParentModule()->getFullName() << "\nDEST SAT: " << iter2->getParentModule()->getFullName();
@@ -191,7 +186,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                 double weight = (distance/299792458)*1000;
                 //VECTOR(weightsVec)[weightsVecIterator] = weight;
                 igraph_vector_push_back(&weightsVec, weight);
-
                 weightsVecIterator++;
                 islVecIterator = islVecIterator + 2;
             //}
@@ -234,7 +228,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
             LeoIpv4* srcIpv4Mod = dynamic_cast<LeoIpv4 *>(sourceMod->getModuleByPath(".ipv4.ip"));
             igraph_vector_int_t *path;
             for (int i = 0; i < igraph_vector_int_list_size(&vertexPaths); i++) {
-
                 path = igraph_vector_int_list_get_ptr(&vertexPaths, i);
                 int sourceNodeNum = igraph_vector_int_get(path, 0);
                 int nextHopNodeNum = igraph_vector_int_get(path, 1);
@@ -251,9 +244,7 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                             std::string str1 = destMod->getFullName();
                             std::string str2 = nextHopMod->getFullName() + std::to_string(nextHopID);
                             srcIpv4Mod->addNextHopStr(str1, str2);
-
                             srcIpv4Mod->addKNextHop(shellIndex, destinationIE->getIpv4Address().getInt(), nextHopID);
-
                         }
                     }
                 }
@@ -306,7 +297,6 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
     igraph_vector_destroy(&weightsVec);
     igraph_vector_int_destroy(&shortestPathVertexVec);
     igraph_vector_int_destroy(&shortestPathEdgesVec);
-//    fout.close();
 }
 void LeoIpv4NetworkConfigurator::addNextHopInterface(cModule* source, cModule* destination, int interfaceID)
 {
