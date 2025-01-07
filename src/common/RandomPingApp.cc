@@ -141,7 +141,9 @@ void RandomPingApp::parseDestAddressesPar()
         std::hash<std::string> hasher;
         long hashed = hasher(seed.c_str());
         std::mt19937 rng;
-        rng.seed(hashed);
+        int randomOmnetpp = uniform(1,10000000);
+        unsigned int combinedSeed = static_cast<unsigned int>(hashed) ^ randomOmnetpp;
+        rng.seed(combinedSeed);
         std::shuffle(destAddresses.begin(),destAddresses.end(),rng);
 
     }
@@ -159,7 +161,9 @@ void RandomPingApp::parseDestAddressesPar()
             std::mt19937 rng;
             std::hash<std::string> hasher;
             long hashed = hasher(seed.c_str());
-            rng.seed(hashed);
+            int randomOmnetpp = uniform(1,10000000);
+            unsigned int combinedSeed = static_cast<unsigned int>(hashed) ^ randomOmnetpp;
+            rng.seed(combinedSeed);
             std::shuffle(destAddresses.begin(),destAddresses.end(),rng);
         }
     }
@@ -226,6 +230,7 @@ void RandomPingApp::handleSelfMessage(cMessage *msg)
 
     if (enabled != -1){
         // send a ping
+//        std::cout << "Sending Ping";
         sendPingRequest();
     }
 

@@ -333,21 +333,24 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
             LeoIpv4* srcIpv4Mod = dynamic_cast<LeoIpv4 *>(sourceMod->getModuleByPath(".ipv4.ip"));
             igraph_vector_int_t *path;
             for (int i = 0; i < igraph_vector_int_list_size(&vertexPaths); i++) {
-//                if(i == 432){
-//                    int ugh = 0;
-//                }
+
                 path = igraph_vector_int_list_get_ptr(&vertexPaths, i);
                 int sourceNodeNum = igraph_vector_int_get(path, 0);
                 int nextHopNodeNum = igraph_vector_int_get(path, 1);
                 int destinationNodeNum = igraph_vector_int_get(path, igraph_vector_int_size(path)-1);
                 //std::cout << "\nSOURCE NUM: " << sourceNodeNum << endl;
+
+
                 cModule *nextHopMod = nodeModules.find(nextHopNodeNum)->second;
                 cModule *destMod = nodeModules.find(destinationNodeNum)->second;
                 //std::cout << "\nDEST NUM: " << nextHopMod->getFullName() << endl;
                 //std::cout << "\nNEXT HOP NUM: " << destMod->getFullName() << endl;
                 if(sourceNodeNum != destinationNodeNum){
+//                    if((sourceMod->getFullPath().find("shell[4].satellite[438]", 0)!= std::string::npos) && destMod->getFullPath().find("groundStation[52]",0)!= std::string::npos){
+//                        std::cout << "\n NEXT HOP ID FOUND FOR " << sourceMod->getFullName() << "NextHop is" << nextHopMod->getFullPath() << "For dest: " << destMod->getFullName()<< endl;
+//                    }
                     int nextHopID = nextHopInterfaceMap.find(sourceMod)->second.find(nextHopMod)->second;
-//                    if(sourceNodeNum == 432 && destinationNodeNum == 626){
+//                    if(sourceMod->getFullName() == "groundStation[50]" && shellIndex >= 2){
 //                        //This is outputting gs0 as next hop for 432 to 626
 //                        std::cout << "\n NEXT HOP ID FOUND FOR " << sourceMod->getFullName() << "NextHop is" << nextHopMod->getFullName() << "For dest: " << destMod->getFullName()<< endl;
 //                    }
@@ -360,25 +363,8 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                             std::string str2 = nextHopMod->getFullName() + std::to_string(nextHopID);
                             //str2 = str2 + std::string(nextHopID);
                             srcIpv4Mod->addNextHopStr(str1, str2);
-//                            if(shellIndex == 1 && sourceNodeNum >= numOfSats){
-//                                int fuckme = 0;
-//                            }
-                            //10.1.40.107
-                            Ipv4Address gs1 = Ipv4Address(10,1,40,107);
 
                             srcIpv4Mod->addKNextHop(shellIndex, destinationIE->getIpv4Address().getInt(), nextHopID);
-                            if(shellIndex == 1 && sourceNodeNum == 432){
-                                int nodenuming = 0;
-                                std::string dest1 = destinationIE->getIpv4Address().str();
-                                std::string gs1str = gs1.str();
-                            }
-//                          Where am I sending using 432?
-                            if(shellIndex == 0 && sourceNodeNum == 432 && destinationIE->getIpv4Address().str() == gs1.str()){
-                                int here = 0;
-                            }
-                            if(shellIndex == 1 && sourceNodeNum == 432 && destinationIE->getIpv4Address().str() == gs1.str()){
-                                int here = 0;
-                            }
 
 //                            fout << sourceNodeNum << " " << destinationIE->getIpv4Address().getInt() << " " << nextHopID << "\n";
                         }

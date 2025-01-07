@@ -39,7 +39,9 @@ void LeoIpv4::initialize(int stage)
         const char* parentNodeName = this->getParentModule()->getParentModule()->getFullName();
         std::hash<std::string> hasher;
         auto hashed = hasher(parentNodeName);
-        rng.seed(hashed);
+        int randomOmnetpp = uniform(1,10000000);
+        unsigned int combinedSeed = static_cast<unsigned int>(hashed) ^ randomOmnetpp;
+        rng.seed(combinedSeed);
     }
 }
 
@@ -121,8 +123,6 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
 
 //        int interfaceID = kNextHops[1][destAddr.getInt()];
 
-        int testinterfaceID0 = kNextHops[0][destAddr.getInt()];
-        int testinterfaceID1 = kNextHops[1][destAddr.getInt()];
         // Simulator Limitation:shell0 interfaces cannot be reached by shell1 interfaces
         //if you are returning a packet to sender, you must send it back on the same shell path
         if (!interfaceID ){
@@ -147,6 +147,7 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
             std::cout << "\ndestAddr: " << destAddr.str() << endl;
             std::cout << "\ndestAddr (int): " << destAddr.getInt() << endl;
             std::cout << "\nInterface ID not found!: ID " << interfaceID << " at time: " << simTime() << endl;
+//            std::cout << "shell:" << shell << endl;
 
         }
     }
@@ -154,14 +155,15 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
     if (!hopFound) {    // no route found
         EV_WARN << "unroutable, sending ICMP_DESTINATION_UNREACHABLE, dropping packet\n";
 //        std::cout << "unroutable, sending ICMP_DESTINATION_UNREACHABLE, dropping packet\n";
-//        std::cout << "unroutable, in " << this->getParentModule()->getParentModule()->getFullName() << "to: " << L3AddressResolver().findHostWithAddress(destAddr)->getFullName() << std::endl;
+//        std::cout << "unroutable, in " << this->getParentModule()->getParentModule()->getClassAndFullPath() << "to: " << L3AddressResolver().findHostWithAddress(destAddr)->getFullName() << std::endl;
 //        std::cout << "Source addr: "<< sourceAddr.str() << "-> destAddr: " << destAddr.str() << endl;
 
         numUnroutable++;
         PacketDropDetails details;
         details.setReason(NO_ROUTE_FOUND);
         emit(packetDroppedSignal, packet, &details);
-        sendIcmpError(packet, fromIE ? fromIE->getInterfaceId() : -1, ICMP_DESTINATION_UNREACHABLE, 0);
+        //No ICMP Errors
+//        sendIcmpError(packet, fromIE ? fromIE->getInterfaceId() : -1, ICMP_DESTINATION_UNREACHABLE, 0);
     }
     else {    // fragment and send
         //std::cout << "\n Packet being routed!!" << endl;

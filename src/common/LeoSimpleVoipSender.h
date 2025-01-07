@@ -13,6 +13,7 @@
 #include "inet/common/lifecycle/LifecycleUnsupported.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/transportlayer/contract/udp/UdpSocket.h"
+#include "inet/networklayer/ipv4/Icmp.h"
 
 namespace inet {
 

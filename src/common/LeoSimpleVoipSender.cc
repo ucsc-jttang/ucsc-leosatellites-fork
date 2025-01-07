@@ -81,6 +81,10 @@ void LeoSimpleVoipSender::handleMessage(cMessage *msg)
         else
             selectTalkOrSilenceInterval();
     }
+//    else if (msg->isPacket()){
+//        std::cout << "Message Dropped due to route update affecting shell coverage";
+//        //TODO Print which shell it came in from
+//    }
     else
         throw cRuntimeError("Unknown incoming message: '%s' on gate '%s'", msg->getClassName(), msg->getArrivalGate()->getFullName());
 }
