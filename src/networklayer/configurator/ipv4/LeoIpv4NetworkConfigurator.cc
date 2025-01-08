@@ -161,6 +161,8 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
 
     for (int nodeNum = 0; nodeNum < numOfSats+numOfGS; nodeNum++) {
         cModule* mod = nodeModules.find(nodeNum)->second;
+//      each shell has its own network configurator
+//      clear out the nexthop entries for the specific shell this network configurator is on
         dynamic_cast<LeoIpv4 *>(mod->getModuleByPath(".ipv4.ip"))->clearNextHops(shellIndex);
     }
     std::chrono::high_resolution_clock::time_point fillVectorStartTime = std::chrono::high_resolution_clock::now();
@@ -175,6 +177,8 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
     igraph_vector_init(&weightsVec, 0);
     unsigned int islVecIterator = 0;
     unsigned int weightsVecIterator = 0;
+
+//  iterate through in a standard order
     for (int i = 0; i < nodeModules.size() - numOfGS; i++) {
         cModule* satMod = nodeModules.find(i)->second;
         SatelliteMobility* satMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
@@ -244,6 +248,7 @@ void LeoIpv4NetworkConfigurator::generateTopologyGraph(simtime_t currentInterval
                             std::string str1 = destMod->getFullName();
                             std::string str2 = nextHopMod->getFullName() + std::to_string(nextHopID);
                             srcIpv4Mod->addNextHopStr(str1, str2);
+//                          specify which shellIndex the nextHop goes to
                             srcIpv4Mod->addKNextHop(shellIndex, destinationIE->getIpv4Address().getInt(), nextHopID);
                         }
                     }

@@ -136,17 +136,20 @@ void RandomPingApp::parseDestAddressesPar()
     int endRange = par("endRange");
 
     std::string temp = "";
+//  sending to each gs interface
     if (!strcmp(destAddrs, "intf")) {
         destAddresses=getAllAddresses();
         std::hash<std::string> hasher;
         long hashed = hasher(seed.c_str());
         std::mt19937 rng;
+//        Randomize with an element that uses omnetpp seed
         int randomOmnetpp = uniform(1,10000000);
         unsigned int combinedSeed = static_cast<unsigned int>(hashed) ^ randomOmnetpp;
         rng.seed(combinedSeed);
         std::shuffle(destAddresses.begin(),destAddresses.end(),rng);
 
     }
+//    sending to each gs
     else if (!strcmp(destAddrs, "gs")) {
         for(int i =startRange; i<=endRange;i++){
             if(i != selfId){
@@ -161,6 +164,7 @@ void RandomPingApp::parseDestAddressesPar()
             std::mt19937 rng;
             std::hash<std::string> hasher;
             long hashed = hasher(seed.c_str());
+//            randomize with omnetpp run-seed
             int randomOmnetpp = uniform(1,10000000);
             unsigned int combinedSeed = static_cast<unsigned int>(hashed) ^ randomOmnetpp;
             rng.seed(combinedSeed);
@@ -576,6 +580,7 @@ void RandomPingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt, bool
 
 std::vector<L3Address> RandomPingApp::getAllAddresses()
 {
+//  Gets the addresses of each groundstation's interfaces
     std::vector<L3Address> result;
     //Hardcode the locations of the 46 ground stations
     //45 for index by zero count
