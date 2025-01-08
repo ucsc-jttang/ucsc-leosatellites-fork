@@ -30,10 +30,10 @@
 //-----------------------------------------------------
 #include "cNoradBaseA.h"
 #include "cOrbitA.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/ccoord.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cEci.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cVector.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cJulian.h"
+#include "../workspace/os3/src/libnorad/ccoord.h"
+#include "../workspace/os3/src/libnorad/cEci.h"
+#include "../workspace/os3/src/libnorad/cVector.h"
+#include "../workspace/os3/src/libnorad/cJulian.h"
 
 #include <cmath>
 

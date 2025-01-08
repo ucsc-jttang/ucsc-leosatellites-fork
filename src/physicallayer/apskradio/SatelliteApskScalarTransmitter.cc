@@ -20,8 +20,8 @@
 #include "inet/physicallayer/wireless/apsk/packetlevel/ApskPhyHeader_m.h"
 #include "inet/physicallayer/wireless/common/contract/packetlevel/RadioControlInfo_m.h"
 
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/mobility/LUTMotionMobility.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/mobility/SatSGP4Mobility.h"
+#include "../workspace/os3/src/mobility/LUTMotionMobility.h"
+#include "../workspace/os3/src/mobility/SatSGP4Mobility.h"
 namespace inet {
 
 namespace physicallayer {

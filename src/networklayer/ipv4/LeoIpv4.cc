@@ -13,6 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 #include "LeoIpv4.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
+
 
 namespace inet {
 
@@ -34,7 +36,13 @@ void LeoIpv4::initialize(int stage)
     if (stage == INITSTAGE_LOCAL) {
         WATCH_MAP(nextHops);
         WATCH_MAP(nextHopsStr);
-
+        const char* parentNodeName = this->getParentModule()->getParentModule()->getFullName();
+        std::hash<std::string> hasher;
+        auto hashed = hasher(parentNodeName);
+        //            randomize with omnetpp run-seed
+        int randomOmnetpp = uniform(1,10000000);
+        unsigned int combinedSeed = static_cast<unsigned int>(hashed) ^ randomOmnetpp;
+        rng.seed(combinedSeed);
     }
 }
 
@@ -50,10 +58,18 @@ void LeoIpv4::addNextHopStr(std::string destinationAddr, std::string nextInterfa
     nextHopsStr[destinationAddr] = nextInterfaceID;
 }
 
-void LeoIpv4::clearNextHops(){
-    kNextHops.clear();
+void LeoIpv4::clearNextHops(int shellIndex=0){
+    kNextHops[shellIndex].clear();
     nextHopsStr.clear();
     nextHops.clear();
+}
+
+int LeoIpv4::getShellIndex(){
+    int rows = sizeof kNextHops / sizeof kNextHops[0];
+    if (rows > 1) {
+        return rows;
+    }
+    return -1;
 }
 
 void LeoIpv4::routeUnicastPacket(Packet *packet)
@@ -67,8 +83,9 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
 
     const auto& ipv4Header = packet->peekAtFront<Ipv4Header>();
     Ipv4Address destAddr = ipv4Header->getDestAddress();
+//    inet::L3Address sourceAddr = ipv4Header->getSourceAddress();
     EV_INFO << "Routing " << packet << " with destination = " << destAddr << ", ";
-    //std::cout << "Routing " << packet << " with destination = " << destAddr << ", ";
+//    std::cout << "Routing " << packet << " with destination = " << destAddr << ", ";
     // if output port was explicitly requested, use that, otherwise use Ipv4 routing
     if (destIE) {
         EV_DETAIL << "using manually specified output interface " << destIE->getInterfaceName() << "\n";
@@ -88,9 +105,33 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
     }
     else {
         // use Ipv4 routing (lookup in routing table)
-        //std::cout << "\nFinding best matching route for: " << destAddr.str() << endl;
+//        std::cout << "\nFinding best matching route for: " << destAddr.str() << endl;
         //const Ipv4Route *re = rt->findBestMatchingRoute(destAddr);
-        int interfaceID = kNextHops[1][destAddr.getInt()];
+//        randomly select shell
+        int shell = -1;
+        auto it = kNextHops.begin();
+        //Currently using rng seeded with unique groundstation name
+        if(kNextHops.size() > 1){
+            shell = rng()%kNextHops.size();
+        } else {
+            shell = it->first;
+        }
+
+        int interfaceID = kNextHops[shell][destAddr.getInt()];
+
+        // Simulator Limitation:shell0 interfaces cannot be reached by shell1 interfaces
+        //if you are returning a packet to sender, you must send it back on the same shell path
+        if (!interfaceID ){
+             for(auto it = kNextHops.begin(); it != kNextHops.end(); ++it){
+                 auto i = std::distance(kNextHops.begin(), it);
+                 int potentialInterfaceId = kNextHops[i][destAddr.getInt()];
+                 if(potentialInterfaceId){
+                     interfaceID=potentialInterfaceId;
+                     break;
+                 }
+             }
+        }
+
         if (interfaceID) {
             //std::cout << "Adding route with the following dest ID: " << interfaceID << endl;
             //std::cout << "Gateway: " << re->getGateway() << endl;
@@ -108,12 +149,13 @@ void LeoIpv4::routeUnicastPacket(Packet *packet)
 
     if (!hopFound) {    // no route found
         EV_WARN << "unroutable, sending ICMP_DESTINATION_UNREACHABLE, dropping packet\n";
-        std::cout << "unroutable, sending ICMP_DESTINATION_UNREACHABLE, dropping packet\n";
         numUnroutable++;
         PacketDropDetails details;
         details.setReason(NO_ROUTE_FOUND);
         emit(packetDroppedSignal, packet, &details);
-        sendIcmpError(packet, fromIE ? fromIE->getInterfaceId() : -1, ICMP_DESTINATION_UNREACHABLE, 0);
+//        commented out becasue sender/recievers do not handle this
+//        sendIcmpError(packet, fromIE ? fromIE->getInterfaceId() : -1, ICMP_DESTINATION_UNREACHABLE, 0);
+
     }
     else {    // fragment and send
         //std::cout << "\n Packet being routed!!" << endl;

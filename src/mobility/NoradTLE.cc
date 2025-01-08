@@ -3,9 +3,9 @@
 #include <ctime>
 #include <fstream>
 
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cTLE.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cOrbit.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cSite.h"
+#include "../workspace/os3/src/libnorad/cTLE.h"
+#include "../workspace/os3/src/libnorad/cOrbit.h"
+#include "../workspace/os3/src/libnorad/cSite.h"
 
 using namespace omnetpp;
 Define_Module(NoradTLE);

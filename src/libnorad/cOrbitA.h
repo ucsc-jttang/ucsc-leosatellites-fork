@@ -12,8 +12,8 @@
 #ifndef LEOSATELLITES_MOBILITY_cOrbitA_H__
 #define LEOSATELLITES_MOBILITY_cOrbitA_H__
 
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cTLE.h"
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/libnorad/cJulian.h"
+#include "../workspace/os3/src/libnorad/cTLE.h"
+#include "../workspace/os3/src/libnorad/cJulian.h"
 
 class cVector;
 class cGeoCoord;

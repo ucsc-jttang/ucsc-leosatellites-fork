@@ -64,6 +64,7 @@ protected:
     const char* linkMetric;
     std::queue<std::tuple<int, int, double>> groundStationLinks;
     int numOfKPaths;
+    unsigned int shellIndex;
 
     simtime_t currentInterval;
     igraph_vector_int_t islVec;

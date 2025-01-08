@@ -52,6 +52,7 @@ void LeoChannelConstructor::initialize(int stage)
         updateInterval = 0;
         currentInterval = 0;
         networkName = getParentModule()->getName();
+        shellIndex = getAncestorPar("shellIndex");
         linkDataRate = par("dataRate").str();
         scheduleAt(0, startManagerNode);
 
@@ -103,7 +104,7 @@ void LeoChannelConstructor::setUpSimulation()
 {
     //cChannelType *channelType = cChannelType::get("ned.DatarateChannel"); //replace with either gs channel or laser link channel ned file
     for(int satNum = 0; satNum < numOfSats; satNum++){
-        std::string satName = std::string(networkName + ".satellite[" + std::to_string(satNum) + "]");
+        std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
         cModule *satMod = getModuleByPath(satName.c_str());
         if(satNum == 0){
             updateInterval = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"))->par("updateInterval").doubleValue() + 0.000000001;
@@ -115,7 +116,7 @@ void LeoChannelConstructor::setUpSimulation()
             numOfSatsInPlane = numOfSats;
         }
         for(unsigned int satNum = planeNum*satPerPlane; satNum < numOfSatsInPlane; satNum++){
-            std::string satName = std::string(networkName + ".satellite[" + std::to_string(satNum) + "]");
+            std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
             cModule *satMod = getModuleByPath(satName.c_str()); // get source satellite module
 
             cGate *inGateSat1;
@@ -128,7 +129,7 @@ void LeoChannelConstructor::setUpSimulation()
             }
 
             if(destSatNumA < numOfSats){
-                std::string destSatNameA = std::string(networkName + ".satellite[" + std::to_string(destSatNumA) + "]");  //+1 within same orbital plane ISL
+                std::string destSatNameA = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(destSatNumA) + "]");  //+1 within same orbital plane ISL
                 cModule *destModA = getModuleByPath(destSatNameA.c_str());
                 std::pair <cGate*, cGate*> gatePair1 = getNextFreeGate(satMod);
                 std::pair <cGate*, cGate*> gatePair2 = getNextFreeGate(destModA);
@@ -150,7 +151,7 @@ void LeoChannelConstructor::setUpSimulation()
 
             int destSatNumB = (satNum + satPerPlane);// % totalSats;
             if(destSatNumB < numOfSats){
-                std::string destSatNameB = std::string(networkName + ".satellite[" + std::to_string(destSatNumB) + "]"); //+1 adjacent orbital plane ISL
+                std::string destSatNameB = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(destSatNumB) + "]"); //+1 adjacent orbital plane ISL
                 cModule *destModB = getModuleByPath(destSatNameB.c_str());
                 std::pair <cGate*, cGate*> gatePair1 = getNextFreeGate(satMod);
                 std::pair <cGate*, cGate*> gatePair2 = getNextFreeGate(destModB);
@@ -178,14 +179,14 @@ void LeoChannelConstructor::setUpSimulation()
 void LeoChannelConstructor::setUpInterfaces()
 {
     for(int satNum = 0; satNum < numOfSats; satNum++){
-        std::string satName = std::string(networkName + ".satellite[" + std::to_string(satNum) + "]");
+        std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
         cModule *satMod = getModuleByPath(satName.c_str());
         updatePPPModules(satMod);
         dynamic_cast<LeoIpv4RoutingTable*>(satMod->getModuleByPath(".ipv4.routingTable"))->configureRouterId();
     }
 
     for(int gsNum = 0; gsNum < numOfGS; gsNum++){
-        std::string gsName = std::string(networkName + ".groundStation[" + std::to_string(gsNum) + "]");
+        std::string gsName = std::string(networkName + "[0].groundStation[" + std::to_string(gsNum) + "]");
         cModule *gsMod = getModuleByPath(gsName.c_str());
         updatePPPModules(gsMod);
         dynamic_cast<LeoIpv4RoutingTable*>(gsMod->getModuleByPath(".ipv4.routingTable"))->configureRouterId();
@@ -194,13 +195,13 @@ void LeoChannelConstructor::setUpInterfaces()
 
 void LeoChannelConstructor::addPPPInterfaces(){
     for(int satNum = 0; satNum < numOfSats; satNum++){
-        std::string satName = std::string(networkName + ".satellite[" + std::to_string(satNum) + "]");
+        std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
         cModule *satMod = getModuleByPath(satName.c_str());
         updatePPPModules(satMod);
     }
 
     for(int gsNum = 0; gsNum < numOfGS; gsNum++){
-        std::string gsName = std::string(networkName + ".groundStation[" + std::to_string(gsNum) + "]");
+        std::string gsName = std::string(networkName + "[0].groundStation[" + std::to_string(gsNum) + "]");
         cModule *gsMod = getModuleByPath(gsName.c_str());
         updatePPPModules(gsMod);
     }
@@ -229,7 +230,7 @@ std::pair<cGate*,cGate*> LeoChannelConstructor::getNextFreeGate(cModule *mod)
 void LeoChannelConstructor::updateChannels()
 {
     for(int satNum = 0; satNum < numOfSats; satNum++){
-        std::string satName = std::string(networkName + ".satellite[" + std::to_string(satNum) + "]");
+        std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
         cModule *satMod = getModuleByPath(satName.c_str());
         for(int i = 0; i < satMod->gateSize("pppg$o"); i++){  //check each possible pppg gate
             cGate* srcGate = satMod->gate("pppg$o", i);
@@ -272,11 +273,12 @@ void LeoChannelConstructor::updateChannels()
 void LeoChannelConstructor::setUpGSLinks()
 {
     for(int gsNum = 0; gsNum < numOfGS; gsNum++){
-        std::string gsName = std::string(networkName + ".groundStation[" + std::to_string(gsNum) + "]");
+        std::string gsName = std::string(networkName + "[0].groundStation[" + std::to_string(gsNum) + "]");
         cModule *gsMod = getModuleByPath(gsName.c_str());
         GroundStationMobility* gsMobility = dynamic_cast<GroundStationMobility*>(gsMod->getSubmodule("mobility"));
         for(int satNum = 0; satNum < numOfSats; satNum++){
-            std::string satName = std::string(networkName + ".satellite[" + std::to_string(satNum) + "]");
+
+            std::string satName = std::string(networkName + "["+std::to_string(shellIndex)+"].satellite[" + std::to_string(satNum) + "]");
             cModule *satMod = getModuleByPath(satName.c_str());
             SatelliteMobility* satMobility = dynamic_cast<SatelliteMobility*>(satMod->getSubmodule("mobility"));
             if(satMobility->isReachable(gsMobility->getLUTPositionY(), gsMobility->getLUTPositionX(), 0)){
@@ -414,9 +416,9 @@ void LeoChannelConstructor::updatePPPModules(cModule *mod)
             nlModule->setGateSize("out", nlOutGateSize+1);
             nlModule->setGateSize("in", nlInGateSize+1);
 
+
             cGate *nlOutGate = nlModule->gate("out", nlOutGateSize);
             cGate *nlInGate = nlModule->gate("in", nlInGateSize);
-
             nlOutGate->connectTo(upLayerInGate);
             upLayerOutGate->connectTo(nlInGate);
 

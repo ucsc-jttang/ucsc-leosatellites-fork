@@ -27,11 +27,15 @@ import leosatellites.common.LeoChannelConstructor;
 // the new mdodels being used such as the SatelliteNetworkConfigurator which will periodically run Dijkstra's
 // algorthm to re establish routes in a dynamic satellite network.
 //
-network SatSGP4
+// numofGS to keep track of all of the GS
+//owned GS to make sure the additional shells do not need to initialize their own ground stations
+module SatSGP4
 {
     parameters:
+        int shellIndex; // Index of the shell in the array
         int numOfSats; // Number of satellites
         int numOfGS; // Number of Mission Control Centers
+        int ownedGS; //Number of GS owned by the shell
         double incl;
         double alt;
         int satsPerPlane;
@@ -53,7 +57,7 @@ network SatSGP4
                 NoradModule.satPerPlane = parent.satsPerPlane;
                 NoradModule.planes = parent.numOfPlanes;
         }
-        groundStation[numOfGS]: GroundStationPPP {
+        groundStation[ownedGS]: GroundStationPPP {
             parameters:
                 @display("p=238.04,343.535;r=10;i=device/receiverdish");
         }
@@ -61,4 +65,11 @@ network SatSGP4
         	@display("p=704.06,601.0725;i=abstract/person,#17FF39;b=,,rect;is=vl;t=Channel Constructor");
         }
     connections allowunconnected:
+}
+//Aggregtes SatSGP4 modules
+network SatSGP4Network {
+    parameters:
+        int numOfShells;
+	submodules:
+	    shell[numOfShells]: SatSGP4;    
 }

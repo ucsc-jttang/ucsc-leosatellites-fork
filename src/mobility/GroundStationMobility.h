@@ -1,7 +1,7 @@
 #ifndef LEOSATELLITES_MOBILITY_GROUNDSTATIONMOBILITY_H_
 #define LEOSATELLITES_MOBILITY_GROUNDSTATIONMOBILITY_H_
 
-#include "/home/ubuntu/workspace/omnetpp-6.0.2/workspace/os3/src/mobility/LUTMotionMobility.h"    // os3
+#include "../workspace/os3/src/mobility/LUTMotionMobility.h"    // os3
 
 class GroundStationMobility : public LUTMotionMobility{
     public:
